@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests, run linting, and test building docs
+# This workflow will install Python dependencies test building docs
 name: Building Docs
 
 on:
@@ -8,28 +8,32 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch: # For on demand runs
-  schedule:
-    - cron: 0 0 * * * # Scheduled run every day at midnight
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    #
+    runs-on: ${{ matrix.platform }}
+    #
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.13"]
+        platform: [ubuntu-latest]
+        python-version: ["3.12"]
 
     steps:
     - uses: actions/checkout@v4
+      #
     - name: Set up Python ${{ matrix.python-version }}
+      #
+
       uses: actions/setup-python@v5
       with:
+        #
         python-version: ${{ matrix.python-version }}
+        #
     - name: Install dependencies
       run: |
-        pip install pip setuptools wheel --upgrade
-        python -m pip install -e .[docs]
+        python -m pip install --upgrade pip
+        python -m pip install -e '.[docs]'
     - name: Build docs
       working-directory: ./docs
       run: make html

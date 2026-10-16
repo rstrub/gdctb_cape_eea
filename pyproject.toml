@@ -6,57 +6,49 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = "gdctb_cape_eea"
-description = "A Python package to process and analyze data from the GDCTB CAPE EEA instrument."
+description = "A Python package to process and analyze data from the GDCTB cape_eea instrument."
 readme = "README.rst"
 dynamic = ["version"]
-authors = [{name = "Steven Christe", email="steven.d.christe@nasa.gov"},
-           {name = "Damian Barrous Dumme", email="damianbarrous@gmail.com"}]
+authors = [{name = "Andrew Robbertz", email="andrew.l.robbertz@nasa.gov"}]
 license = {file = "LICENSE.rst"}
-requires-python = ">=3.9"
-keywords = ["gdctb", "nasa mission", "space weather"]
+requires-python = ">=3.12"
+keywords = ["nasa mission", "space weather"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: Apache 2.0",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.12",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
-  'swxsoc',
-  'ccsdspy @ git+https://github.com/ddasilva/ccsdspy.git'
+  'astropy>=4.1.0',
+  'numpy>=1.16.0',
+  'swxsoc @ git+https://github.com/swxsoc/swxsoc.git@main',
 ]
 
 [project.optional-dependencies]
 dev = [
-  'coverage>=5.0.3',
-  'pytest==8.0.0',
-  'pytest-astropy==0.11.0',
-  'pytest-cov==4.1.0',
-  'black==24.1.1',
-  'flake8==7.0.0',
-  'coverage[toml]==7.4.1'
+  "gdctb_cape_eea[docs,test,style]"
 ]
 
 docs = [
-  'sphinx==7.2.6',
-  'sphinx-automodapi==0.16.0'
+  'sphinx',
+  'sphinx-automodapi',
+  'pydata-sphinx-theme',
 ]
 
 test = [
-  'pytest==8.0.0',
-  'pytest-astropy==0.11.0',
-  'pytest-cov==4.1.0',
-  'coverage[toml]==7.4.1'
+  'pytest',
+  'pytest-astropy',
+  'pytest-cov',
+  'coverage[toml]'
 ]
 
-style = [
-  'black==24.1.1',
-  'flake8==7.0.0'
-]
+style = ['ruff']
 
 [tool.setuptools.package-data]
 "gdctb_cape_eea.data" = ["**"]
@@ -72,11 +64,9 @@ testpaths = [
    "gdctb_cape_eea/tests",
    "docs"
 ]
-
 doctest_plus = "enabled"
 text_file_format = "rst"
 addopts = "--doctest-rst"
-
 
 [tool.coverage.run]
 omit = [
@@ -96,5 +86,3 @@ omit = [
   '*/gdctb_cape_eea/version*',
 ]
 
-[tool.black]
-extend-exclude = '''gdctb_cape_eea/_version.py'''

@@ -18,12 +18,12 @@ level guiding requirements or that provide more detail or context. See example b
       - Document Number
       - Publication Date
     * - `Heliophysics Division Science Data Management Policy <https://science.nasa.gov/science-pink/s3fs-public/atoms/files/HPD%20Data%20Policy_Final_20220209.pdf>`_
-      - HPD-SDMP 
+      - HPD-SDMP
       - 14 Feb 2022
-    * - HERMES Project Level Requirement Appendix (PLRA)   
-      - HERMES-SYS-REQ-0027 
-      - 13 Oct 2021 
-    * - `HERMES Project Data Management Plan (PDMP) <https://github.com/HERMES-SOC/hermes-pdmp>`_
-      - HERMES-MGMT-PLAN-0015
+    * - GDCTB CAPE_EEA Project Level Requirement Appendix (PLRA)
+      - GDCTB CAPE_EEA-SYS-REQ-0027
+      - 13 Oct 2021
+    * - GDCTB CAPE_EEA Project Data Management Plan (PDMP)
+      - MGMT-PLAN-0015
       - 7 Oct 2021
 

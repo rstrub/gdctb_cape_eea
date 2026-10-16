@@ -1,13 +1,18 @@
 .. _calibration_plan:
 
-******************************************************
-Electron Electrostatic Analyzer (EEA) Calibration Plan
-******************************************************
+**********************************
+cape_eea Calibration Plan
+**********************************
 
 Overall Calibration Scheme
 ==========================
 This section summarizes the calibration philosophy and identifies any heritage tied to the
 calibration schemes of related missions and instruments.
+
+Science Data needs to reference a Stepper Table that is referenced in the boot packet.
+Versions so far read all of the packets from a sweep defined by the Stepper Table and place the entire
+sweep into a single CDF Packet
+House Keeping HK data has no boot packet dependencies.
 
 Pre-flight Calibration Plans
 ============================
