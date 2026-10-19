@@ -1,8 +1,7 @@
-gdctb_cape_eea Documentation
--------------------------------
+Documentation
+-------------
 
-This is the documentation for the gdctb_cape_eea Python package for processing and analyzing data from the Electron Electrostatic Analyzer (EEA) on the Lunar Gateway.
-
+This is the documentation for GDCTB cape_eea.
 
 .. toctree::
    :maxdepth: 2
