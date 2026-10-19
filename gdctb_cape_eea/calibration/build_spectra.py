@@ -1,9 +1,7 @@
-from swxsoc.swxdata import SWXData
 import astropy.units as astropy_units
 from astropy.timeseries import TimeSeries
 from astropy.time import Time
 from swxsoc.swxdata import SWXData
-from astropy.nddata import NDData
 from ndcube import NDCube, NDCollection
 import numpy as np
 from astropy.wcs import WCS
@@ -61,14 +59,12 @@ class GDCTB_cape_EEA_Data_Processor:
         # iso_str_times = Time(epoch_to_iso(self.EEA.Epoch[:]), scale='utc')
         # cdflib -> astropy
         iso_datetimes = Time([lib.tt2000_to_datetime(e) for e in self.EEA.Epoch[:]])
-        quantity_time = self.EEA.Epoch[:] * astropy_units.second
 
         #
         ts_1d_uQ = TimeSeries(time=iso_datetimes)
 
         self._gdctb_cape_eea_spectra()
         bare_attrs = SWXData.global_attribute_template(gdctb_cape_eea.INST_NAME, "l1", "1.0.0")
-        ts_justTime = TimeSeries(time=iso_datetimes)
 
         self.gdctb_cape_eea_data = SWXData(
             timeseries=ts_1d_uQ,  # this is stats time series ....with no stats...

@@ -1,6 +1,6 @@
 import numpy as np
 from gdctb_cape_eea import log
-from gdctb_cape_eea.io import EEA
+
 from gdctb_cape_eea.util.time import ccsds_to_cdf_time
 from gdctb_cape_eea.io.EEA import (
     MAX_STEPS,
@@ -54,7 +54,6 @@ def skymap_factory(l0_cdf, stepper, myEEA):
 
     # The Science Data, naturally:
     stepper_table_packets = (np.where(l0_cdf["SHEID"][:] > 0))[0]
-    return_package = {}
     # the packets start when STEP is 0
     # the packets are sciencedata when SHEID is 1
     # nominally stepper_table_packets[0] will be 0 (no integrates at the beginning)

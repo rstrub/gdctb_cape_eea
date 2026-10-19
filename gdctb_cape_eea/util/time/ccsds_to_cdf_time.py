@@ -56,7 +56,6 @@ def converting_ccsds_times_to_cdf(coarse, fine):
     tai_time["MicrosPerSec"] = 1000000
     tai_time["nanosPerSec"] = 1000000000
 
-    example = coarse[0] * tai_time["nanosPerSec"]
     p1 = np.int64(coarse) * np.int64(tai_time["nanosPerSec"])
     p2 = np.int64(fine) * np.int64(tai_time["nanosPerMicro"])
     epoch = p1 + p2

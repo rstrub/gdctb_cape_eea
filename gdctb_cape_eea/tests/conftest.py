@@ -1,10 +1,3 @@
-import os
-
-from gdctb_cape_eea.Stepper.StepperTable import StepperTable
-from gdctb_cape_eea.calibration.calibration import (
-    get_stepper_table_for_file,
-    get_apid_for_file,
-)
 
 TEST_PROCESSING = [
     "ptb_esastepped_undeflected_stepper.txt",

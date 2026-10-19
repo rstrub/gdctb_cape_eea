@@ -2,15 +2,12 @@
 A module for all things calibration.
 """
 
-from datetime import datetime, timezone, timedelta
-import random
 import os.path
 import csv
 import struct
 from pathlib import Path
 import sys
 import ccsdspy
-import numpy as np
 import astropy.units as astropy_units
 from astropy.timeseries import TimeSeries
 
@@ -24,7 +21,6 @@ from gdctb_cape_eea.io.EEA import EEA
 from gdctb_cape_eea.SkymapFactory import skymap_factory
 from gdctb_cape_eea.Stepper.StepperTable import StepperTable
 from gdctb_cape_eea.util.time import ccsds_to_cdf_time
-from gdctb_cape_eea.Stepper.StepperTable import get_unique_list
 
 # cdflib -> spacepy
 from spacepy.pycdf import lib
@@ -354,7 +350,6 @@ def l0_hk_data_to_cdf(
     output_filename: Path
         Fully specificied filename of cdf file
     """
-    file_metadata = parse_science_filename(original_filename.name)
 
     epoch = ccsds_to_cdf_time.help_convert_eaa(data)
     iso_datetimes = Time([lib.tt2000_to_datetime(e) for e in epoch])
@@ -389,7 +384,7 @@ def l0_hk_data_to_cdf(
 
     try:
         cdf_path = gdctb_cape_eea_hk_data.save(destination_dir, True)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - last-resort boundary: log any save failure and exit cleanly
         log.error(e)
         sys.exit(2)
 
@@ -430,19 +425,11 @@ def l0_sci_data_to_cdf(
     # this is transferring name.bin to name.cdf
     file_metadata = parse_science_filename(original_filename.name)
 
-    cdf_filename = original_filename.parent / create_science_filename(
-        file_metadata["instrument"],
-        file_metadata["time"],
-        "l1",
-        f'1.0.{file_metadata["version"]}',
-    )
     if data:
         """
         gdctb_cape_eea.stepper_table for now is defined in gdctb_cape_eea/gdctb_cape_eea/__init__.py
         """
 
-        # calibration_file = get_calibration_file(gdctb_cape_eea.stepper_table)
-        # read_calibration_file(calibration_file)
 
         myEEA = EEA(file_metadata)
         # SkymapFactory, now as does FPI, also populates my EEA data model
@@ -456,7 +443,6 @@ def l0_sci_data_to_cdf(
         #    [lib.tt2000_to_datetime(e) for e in myEEA.Epoch[0:10]]
         # )
 
-        n_sweeps = len(myEEA.Epoch)
 
         # https://swxsoc.readthedocs.io/en/latest/user-guide/reading_writing_data.html
         # https://swxsoc.readthedocs.io/en/latest/generated/api/swxsoc.swxdata.SWXData.html#swxsoc.swxdata.SWXData
@@ -468,7 +454,7 @@ def l0_sci_data_to_cdf(
             cdf_path = gdctb_cape_eea_factory.gdctb_cape_eea_data.save(
                 output_path=destination_dir, overwrite=True
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - last-resort boundary: log any save failure and exit cleanly
             log.error(e)
             sys.exit(2)
 

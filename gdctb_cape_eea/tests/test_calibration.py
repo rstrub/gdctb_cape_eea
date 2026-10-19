@@ -11,7 +11,6 @@ from gdctb_cape_eea.io import read_ccsds
 import gdctb_cape_eea.calibration as calib
 from gdctb_cape_eea import _data_directory, _calibration_directory
 from swxsoc.util.util import create_science_filename, parse_science_filename
-import sys
 from spacepy import pycdf
 from gdctb_cape_eea import log
 import numpy as np
@@ -23,11 +22,7 @@ from gdctb_cape_eea.calibration.calibration import (
     CURRENT_STEPPER_TABLE_FILE,
 )
 from gdctb_cape_eea.tests.conftest import TEST_PROCESSING
-from gdctb_cape_eea.calibration.calibration import (
-    is_binary_file,
-    is_boot_packet,
-    is_ascii_file,
-)
+from gdctb_cape_eea.calibration.calibration import ( is_boot_packet)
 
 # boot_packet.txt entries in TEST_PROCESSING contain just the stepper table filename to use for
 # whichever science files follow, until the next boot_packet.txt; persisted here to simulate the
@@ -106,12 +101,6 @@ def test_process_file(small_level0_file):
 
 
 def verify_l1a(data_filename, output_l1a):
-    """
-    We haven't decided yet on variables really
-    """
-    # Determine the APID (and, for science data, the StepperTable) from the file itself.
-    apid = _peek_apid(data_filename)
-    # Fall back to the default table if the caller didn't already resolve one (e.g. via boot packet).
 
     from gdctb_cape_eea.io.EEA import REAL4FILL, EPOCHTIMEFILL, INTFILL
 
@@ -134,7 +123,6 @@ def verify_l1a(data_filename, output_l1a):
         variable_list = [item[0] for item in list(cdf.items())]
         for var in variable_list:
             log.info(var)
-            ndims = len(cdf[var].shape)
 
             # look at the counts
             # best guess at counter variable
@@ -159,7 +147,6 @@ def verify_l1a(data_filename, output_l1a):
                 counter_vals = cdf[counter][i]
                 total = np.sum(skymap_vals[skymap_vals != REAL4FILL])
                 cntsum = np.sum(counter_vals[counter_vals != INTFILL])
-
                 # 40% seems like a lot... This is because this is not just for one packet but a whole sweep
                 # that's why I created my STATS variable.
                 # is nominal but 40% is possible for small counts
@@ -167,6 +154,7 @@ def verify_l1a(data_filename, output_l1a):
 
                 # log.info("totals: skymap:%d counter:%d" % (total, cntsum))
                 # assert abs(cntsum - total) <= diff
+
         except NameError as e:
             log.info(f"Error verifying L1A file {output_l1a}: {e} skymap not defined")
             log.info("If hk in filename then it should fail")
