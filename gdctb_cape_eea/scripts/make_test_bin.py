@@ -14,7 +14,7 @@ Usage
 
 import argparse
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import hermes_eea
 from hermes_eea.util.jsonl_to_bin import jsonl_to_bin
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    time_str = args.time or datetime.now(timezone.utc).strftime("%Y%j-%H%M%S")
+    time_str = args.time or datetime.now(UTC).strftime("%Y%j-%H%M%S")
     output_filename = os.path.join(args.output_dir, make_l0_filename(time_str, args.version))
 
     n_packets = jsonl_to_bin(

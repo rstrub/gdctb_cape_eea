@@ -12,7 +12,6 @@ import argparse
 import collections
 
 from ccsdspy.utils import read_primary_headers
-
 from gdctb_cape_eea.util.filter_apid import filter_apid
 
 

@@ -1,9 +1,10 @@
-import gdctb_cape_eea
 from pathlib import Path
+
+import pytest
+
+import gdctb_cape_eea
 from gdctb_cape_eea.io.file_tools import read_file
 from gdctb_cape_eea.Stepper.StepperTable import StepperTable, validate_stepper_table
-from pathlib import Path
-import pytest
 
 
 def test_read_file():

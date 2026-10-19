@@ -13,8 +13,6 @@ TEST_PROCESSING = [
     "gdctb_cape-eea_hk_l0_2026023-000000_v0.bin",
     "flight_stepper.txt",
     "gdctb_cape-eea_l0_2026023-000000_v0.bin",
-    "flight_stepper.txt",
-    "gdctb_cape-eea_l0_2023042-000000_v0.bin",
 ]
 
 

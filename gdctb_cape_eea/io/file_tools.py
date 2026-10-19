@@ -1,12 +1,12 @@
 from pathlib import Path
+
 from ccsdspy import FixedLength
-import numpy as np
 
 """
 This module provides a generic file reader.
 """
 
-__all__ = ["read_file", "read_ccsds"]
+__all__ = ["read_ccsds", "read_file"]
 
 
 def read_file(data_filename: Path):
@@ -28,7 +28,7 @@ def read_file(data_filename: Path):
     try:
         with open(data_filename) as fh:
             return fh.readlines()
-    except Exception:
+    except Exception: # noqa: BLE001
         raise Exception("Could not find: " + data_filename)
 
 

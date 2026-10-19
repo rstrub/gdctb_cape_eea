@@ -32,7 +32,7 @@ _calibration_directory = _data_directory / "calibration"
 
 log.debug(f"gdctb_cape_eea version: {__version__}")
 
-INSTRUMENT_NAME = "cape_eea"
+INSTRUMENT_NAME = "cape-eea"
 
 # Kept as a separate alias (rather than inlining INSTRUMENT_NAME everywhere) to mirror
 # the ported gdctb_cape_eea code's INST_NAME/INST_SHORTNAME/INST_TARGETNAME naming, and to

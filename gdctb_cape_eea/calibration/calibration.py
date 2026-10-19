@@ -2,40 +2,40 @@
 A module for all things calibration.
 """
 
-import os.path
 import csv
+import os.path
 import struct
-from pathlib import Path
 import sys
-import ccsdspy
+from pathlib import Path
+
 import astropy.units as astropy_units
+import ccsdspy
+from astropy.time import Time
 from astropy.timeseries import TimeSeries
 
-from gdctb_cape_eea import log
-from swxsoc.util.util import create_science_filename, parse_science_filename
+# cdflib -> spacepy
+from spacepy.pycdf import lib
 from swxsoc.swxdata import SWXData
+from swxsoc.util.util import parse_science_filename
+
 import gdctb_cape_eea
-from gdctb_cape_eea.io import read_file
 import gdctb_cape_eea.calibration as calib
+from gdctb_cape_eea import log
+from gdctb_cape_eea.calibration.build_spectra import GDCTB_cape_EEA_Data_Processor
+from gdctb_cape_eea.io import read_file
 from gdctb_cape_eea.io.EEA import EEA
 from gdctb_cape_eea.SkymapFactory import skymap_factory
 from gdctb_cape_eea.Stepper.StepperTable import StepperTable
 from gdctb_cape_eea.util.time import ccsds_to_cdf_time
 
-# cdflib -> spacepy
-from spacepy.pycdf import lib
-from gdctb_cape_eea.calibration.build_spectra import GDCTB_cape_EEA_Data_Processor
-from astropy.time import Time
-
-
 __all__ = [
-    "process_file",
-    "parse_l0_sci_packets",
-    "parse_hk_packets",
-    "l0_sci_data_to_cdf",
-    "l0_hk_data_to_cdf",
     "calibrate_file",
     "get_calibration_file",
+    "l0_hk_data_to_cdf",
+    "l0_sci_data_to_cdf",
+    "parse_hk_packets",
+    "parse_l0_sci_packets",
+    "process_file",
     "read_calibration_file",
 ]
 APIDS = {
@@ -522,7 +522,7 @@ def is_binary_file(file_path, block_size=1024):
                 return True
 
             return False
-    except IOError:
+    except OSError:
         print(f"Error: Could not read file {file_path}")
         return False
 
@@ -542,7 +542,7 @@ def is_ascii_file(file_path, block_size=1024):
                 return False
 
             return True
-    except IOError:
+    except OSError:
         print(f"Error: Could not read file {file_path}")
         return False
 

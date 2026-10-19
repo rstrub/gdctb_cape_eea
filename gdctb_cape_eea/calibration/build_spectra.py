@@ -1,13 +1,15 @@
-import astropy.units as astropy_units
-from astropy.timeseries import TimeSeries
-from astropy.time import Time
-from swxsoc.swxdata import SWXData
-from ndcube import NDCube, NDCollection
-import numpy as np
-from astropy.wcs import WCS
-from spacepy.pycdf import lib
 import csv
 import os
+
+import astropy.units as astropy_units
+import numpy as np
+from astropy.time import Time
+from astropy.timeseries import TimeSeries
+from astropy.wcs import WCS
+from ndcube import NDCollection, NDCube
+from spacepy.pycdf import lib
+from swxsoc.swxdata import SWXData
+
 import gdctb_cape_eea
 
 
@@ -60,7 +62,6 @@ class GDCTB_cape_EEA_Data_Processor:
         # cdflib -> astropy
         iso_datetimes = Time([lib.tt2000_to_datetime(e) for e in self.EEA.Epoch[:]])
 
-        #
         ts_1d_uQ = TimeSeries(time=iso_datetimes)
 
         self._gdctb_cape_eea_spectra()

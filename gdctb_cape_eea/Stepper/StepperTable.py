@@ -1,7 +1,8 @@
+import os
 from pathlib import Path
+
 import gdctb_cape_eea
 from gdctb_cape_eea.io import read_file
-import os
 
 
 class StepperTable:

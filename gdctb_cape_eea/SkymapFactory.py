@@ -1,16 +1,16 @@
 import numpy as np
-from gdctb_cape_eea import log
 
-from gdctb_cape_eea.util.time import ccsds_to_cdf_time
+from gdctb_cape_eea import log
 from gdctb_cape_eea.io.EEA import (
+    EPOCHTIMEFILL,
+    INTFILL,
     MAX_STEPS,
     N_AZIMUTH,
     PULSE_A_CHANNEL,
     PULSE_B_CHANNEL,
     REAL4FILL,
-    EPOCHTIMEFILL,
-    INTFILL,
 )
+from gdctb_cape_eea.util.time import ccsds_to_cdf_time
 
 
 def skymap_factory(l0_cdf, stepper, myEEA):
