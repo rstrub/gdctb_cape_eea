@@ -11,7 +11,7 @@ def help_convert_eaa(decoded) -> np.ndarray:
     Parameters
     ----------
     decoded - this is the binary packets parsed by CCSDSPY using
-    config file: hermes, now gdctb_cape_EEA_sci_packet_def.csv. Arrays usually include
+    config file: hermes, now gdctb_cape-eea_sci_packet_def.csv. Arrays usually include
     APID, then a COARSE and FINE time that we translate into CDF EPOCH
     according to examples in original IDL FPI Ground System code.
 

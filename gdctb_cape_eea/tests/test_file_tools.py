@@ -1,4 +1,3 @@
-import os
 import gdctb_cape_eea
 from pathlib import Path
 from gdctb_cape_eea.io.file_tools import read_file
@@ -13,7 +12,7 @@ def test_read_file():
 
 @pytest.fixture(scope="session")  # this is a pytest fixture
 def first_stepper_file(tmp_path_factory):
-    fn = Path(os.path.join(gdctb_cape_eea.FirstStepperTable))
+    fn = Path("flight_stepper.txt")
     return fn
 
 

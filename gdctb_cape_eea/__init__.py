@@ -40,16 +40,23 @@ INSTRUMENT_NAME = "cape_eea"
 # the registered instrument "name" must equal this package's own name suffix ("cape_eea")
 # so that, once available, get_instrument_package("cape_eea") resolves to "gdctb_cape_eea".
 INST_NAME = INSTRUMENT_NAME
-INST_SHORTNAME = "eea"
-INST_TARGETNAME = "EEA"
+# Must use a hyphen, not an underscore: swxsoc's create_science_filename()/parse_science_filename()
+# split filenames on "_" and locate fields by position, so an underscore here (e.g. "cape_eea")
+# would be split into extra tokens and break parsing. "cape-eea" survives the split intact,
+# producing filenames like gdctb_cape-eea_l1_20000101T170901_v1.0.0.cdf.
+INST_SHORTNAME = "cape-eea"
+# Matches INST_SHORTNAME so L0 .bin filenames (gdctb_cape-eea_l0_..._v0.bin, validated against
+# inst_targetnames) and L1+ .cdf filenames (gdctb_cape-eea_l1_..._v1.0.0.cdf, validated against
+# inst_shortnames) use the same instrument token.
+INST_TARGETNAME = "cape-eea"
 INST_FULLNAME = "Electron Electrostatic Analyzer"
 INST_TO_SHORTNAME = {INST_NAME: INST_SHORTNAME}
 INST_TO_TARGETNAME = {INST_NAME: INST_TARGETNAME}
 
-# The installed swxsoc package does not (yet) ship a "GDCTB" entry in its default
+# The installed swxsoc package does not (yet) ship a "gdctb" entry in its default
 # missions_data config, so config["mission"]["inst_*"] come back empty and
 # swxsoc.util.util.parse_science_filename()/create_science_filename() would reject
-# every GDCTB_EEA_* filename. Register this instrument directly so filename
+# every gdctb_cape-eea_* filename. Register this instrument directly so filename
 # validation works regardless of which swxsoc config.yml happened to be loaded.
 if not config["mission"]["inst_names"]:
     config["mission"].update(
@@ -64,8 +71,6 @@ if not config["mission"]["inst_names"]:
             "inst_to_targetname": dict(INST_TO_TARGETNAME),
         }
     )
-
-FirstStepperTable = "flight_stepper.txt"
 
 
 def getCalibrationDirectory():

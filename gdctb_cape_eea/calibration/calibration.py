@@ -232,13 +232,13 @@ def parse_l0_sci_packets(data_filename: Path) -> dict:
     Examples
     --------
     >>> import gdctb_cape_eea.calibration as calib
-    >>> data_filename = "GDCTB_EEA_l0_2022339-000000_v0.bin"
+    >>> data_filename = "gdctb_cape-eea_l0_2022339-000000_v0.bin"
     >>> data = calib.parse_eea_sci_packets(data_filename)  # doctest: +SKIP
     """
     log.info(f"Parsing packets from file:{data_filename}.")
 
     pkt = ccsdspy.FixedLength.from_file(
-        Path(gdctb_cape_eea._data_directory) / "gdctb_cape_EEA_sci_packet_def.csv"
+        Path(gdctb_cape_eea._data_directory) / "gdctb_cape-eea_sci_packet_def.csv"
     )
     data = pkt.load(data_filename, include_primary_header=True)
 
@@ -277,13 +277,13 @@ def parse_hk_packets(data_filename: Path) -> dict:
     Examples
     --------
     >>> import gdctb_cape_eea.calibration as calib
-    >>> data_filename = "GDCTB_EEA_hk_l0_2022339-000000_v0.bin"
+    >>> data_filename = "gdctb_cape-eea_hk_l0_2022339-000000_v0.bin"
     >>> data = calib.parse_hk_packets(data_filename)  # doctest: +SKIP
     """
     log.info(f"Parsing HK packets from file:{data_filename}.")
 
     pkt = ccsdspy.FixedLength.from_file(
-        os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape_EEA_hk_packet_def.csv")
+        os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape-eea_hk_packet_def.csv")
     )
     data = pkt.load(data_filename, include_primary_header=True)
 
@@ -307,23 +307,23 @@ def parse_hk_packets(data_filename: Path) -> dict:
 
 def _read_hk_field_catdesc() -> dict:
     """Read the CATDESC text for each HK field from the description column of
-    gdctb_cape_EEA_hk_packet_def.csv, so field descriptions stay in sync with the
+    gdctb_cape-eea_hk_packet_def.csv, so field descriptions stay in sync with the
     packet definition instead of being duplicated in code.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape_EEA_hk_packet_def.csv")
+    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape-eea_hk_packet_def.csv")
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {row["name"].strip(): row["description"].strip() for row in reader}
 
 
 def _read_hk_fill_field_names() -> set:
-    """Names of HK fields declared as data_type "fill" in gdctb_cape_EEA_hk_packet_def.csv.
+    """Names of HK fields declared as data_type "fill" in gdctb_cape-eea_hk_packet_def.csv.
 
     ccsdspy only bitmasks "uint"/"int" fields, not "fill", so sub-byte fill fields come
     back containing raw, unmasked bits from whatever neighboring field shares that byte.
     Their decoded values are meaningless and shouldn't be written out as measurements.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape_EEA_hk_packet_def.csv")
+    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape-eea_hk_packet_def.csv")
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {
@@ -421,7 +421,7 @@ def l0_sci_data_to_cdf(
     >>> from pathlib import Path
     >>> from swxsoc.util.util import parse_science_filename
     >>> import gdctb_cape_eea.calibration as calib
-    >>> data_filename = Path("GDCTB_EEA_l0_2022339-000000_v0.bin")
+    >>> data_filename = Path("gdctb_cape-eea_l0_2022339-000000_v0.bin")
     >>> metadata = parse_science_filename(data_filename)  # doctest: +SKIP
     >>> data_packets = calib.parse_l0_sci_packets(data_filename)  # doctest: +SKIP
     >>> cdf_filename = calib.l0_sci_data_to_cdf(data_packets, data_filename)  # doctest: +SKIP

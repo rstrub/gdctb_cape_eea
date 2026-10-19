@@ -8,20 +8,20 @@ from gdctb_cape_eea.calibration.calibration import (
 
 TEST_PROCESSING = [
     "ptb_esastepped_undeflected_stepper.txt",
-    "GDCTB_EEA_l0_2026161-142204_v0.bin",
+    "gdctb_cape-eea_l0_2026161-142204_v0.bin",
     "ptb_esastepped_undeflected_stepper.txt",
     "flight_stepper.txt",
-    "GDCTB_EEA_l0_2026161-132236_v0.bin",
+    "gdctb_cape-eea_l0_2026161-132236_v0.bin",
     "ptb_esastepped_undeflected_stepper.txt",
-    # "GDCTB_EEA_l0_2026161-132237_v0.bin",
+    # "gdctb_cape-eea_l0_2026161-132237_v0.bin",
     "ptb_esastepped_undeflected_stepper.txt",
-    "GDCTB_EEA_hk_l0_2026161-132237_v0.bin",
+    "gdctb_cape-eea_hk_l0_2026161-132237_v0.bin",
     "flight_stepper.txt",
-    "GDCTB_EEA_hk_l0_2026023-000000_v0.bin",
+    "gdctb_cape-eea_hk_l0_2026023-000000_v0.bin",
     "flight_stepper.txt",
-    "GDCTB_EEA_l0_2026023-000000_v0.bin",
+    "gdctb_cape-eea_l0_2026023-000000_v0.bin",
     "flight_stepper.txt",
-    "GDCTB_EEA_l0_2023042-000000_v0.bin",
+    "gdctb_cape-eea_l0_2023042-000000_v0.bin",
 ]
 
 

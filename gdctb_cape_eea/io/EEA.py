@@ -1,5 +1,5 @@
 N_AZIMUTH = 32  # number of real sky-map azimuth bins
-# The raw ACCUM packet field has 34 channels total (see hermes, now gdctb_cape_EEA_sci_packet_def.csv).
+# The raw ACCUM packet field has 34 channels total (see hermes, now gdctb_cape-eea_sci_packet_def.csv).
 # Confirmed against the EEA C&DH firmware (GitLab hermes-eea/eea-cdh, eea.vhd/eea_ctrl.vhd):
 # channels 0-31 are the real sky-map azimuth bins; the last two are TOF-ASIC overflow
 # counters, not azimuth data:

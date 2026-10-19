@@ -9,7 +9,7 @@ import gdctb_cape_eea
 from gdctb_cape_eea.calibration.calibration import _peek_apid
 from gdctb_cape_eea.io import read_ccsds
 import gdctb_cape_eea.calibration as calib
-from gdctb_cape_eea import _data_directory, FirstStepperTable, _calibration_directory
+from gdctb_cape_eea import _data_directory, _calibration_directory
 from swxsoc.util.util import create_science_filename, parse_science_filename
 import sys
 from spacepy import pycdf
@@ -64,7 +64,7 @@ def test_read_ccsdspy(small_level0_file):
     # HK and science packets use different fixed-length layouts.
     is_hk = apid in APIDS["HK"]
     packet_def_csv = (
-        "gdctb_cape_EEA_hk_packet_def.csv" if is_hk else "gdctb_cape_EEA_sci_packet_def.csv"
+        "gdctb_cape-eea_hk_packet_def.csv" if is_hk else "gdctb_cape-eea_sci_packet_def.csv"
     )
     pkt = ccsdspy.FixedLength.from_file(
         os.path.join(gdctb_cape_eea._data_directory, packet_def_csv)
