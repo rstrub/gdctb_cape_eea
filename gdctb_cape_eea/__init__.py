@@ -13,8 +13,9 @@ import swxsoc
 from swxsoc import print_config
 
 # Force the mission environment variable and reconfigure regardless of import order
-os.environ["SWXSOC_MISSION"] = "GDCTB"
-swxsoc._reconfigure()
+os.environ["SWXSOC_MISSION"] = "gdctb"
+_reconfigure = getattr(swxsoc, "reconfigure", None) or swxsoc._reconfigure
+_reconfigure()
 
 # Load user configuration
 config = swxsoc.config
@@ -31,7 +32,6 @@ _calibration_directory = _data_directory / "calibration"
 
 log.debug(f"gdctb_cape_eea version: {__version__}")
 
-MISSION_NAME = "GDCTB"
 INSTRUMENT_NAME = "cape_eea"
 
 # Kept as a separate alias (rather than inlining INSTRUMENT_NAME everywhere) to mirror
