@@ -28,15 +28,15 @@ def _read_sci_field_catdesc() -> dict:
 # rather than decoded directly from a packet field, so they have no row in
 # hermes_EEA_sci_packet_def.csv or the stepper table files.
 DERIVED_SPECTRA_CATDESC = {
-    "hermes_eea_step_times": "Raw Per-Step Packet Time",
-    "hermes_eea_energy_profile": "Energy Profile",
-    "hermes_eea_deflection_angles": "Deflection Angles",
-    "hermes_eea_pulse_a": "TOF Channel A Overflow Counter (raw ACCUM bin 33)",
-    "hermes_eea_pulse_b": "TOF Channel B Overflow Counter (raw ACCUM bin 32)",
+    "gdctb_cape_eea_step_times": "Raw Per-Step Packet Time",
+    "gdctb_cape_eea_energy_profile": "Energy Profile",
+    "gdctb_cape_eea_deflection_angles": "Deflection Angles",
+    "gdctb_cape_eea_pulse_a": "TOF Channel A Overflow Counter (raw ACCUM bin 33)",
+    "gdctb_cape_eea_pulse_b": "TOF Channel B Overflow Counter (raw ACCUM bin 32)",
 }
 
 
-class Hermes_EEA_Data_Processor:
+class GDCTB_cape_EEA_Data_Processor:
     """
     This class plays the role of that the Write* classes provided in the pyFPI GroundSystm (HIGS)
     It not only handles the populating and writing of the cdf but attibutes are also added here.
@@ -51,7 +51,7 @@ class Hermes_EEA_Data_Processor:
         # I'm leaving this here for future pre-flight reference
         self.raw_counts = astropy_units.def_unit("raw instrument counts")
 
-    def build_HermesData(self):
+    def build_GDCTB_capeData(self):
         """
         time - an EEA Single dimension variable
         # this function sets/prepares the variables for writing. Here is
@@ -66,20 +66,20 @@ class Hermes_EEA_Data_Processor:
         #
         ts_1d_uQ = TimeSeries(time=iso_datetimes)
 
-        self._hermes_eea_spectra()
+        self._gdctb_cape_eea_spectra()
         bare_attrs = SWXData.global_attribute_template(gdctb_cape_eea.INST_NAME, "l1", "1.0.0")
         ts_justTime = TimeSeries(time=iso_datetimes)
 
-        self.hermes_eea_data = SWXData(
+        self.gdctb_cape_eea_data = SWXData(
             timeseries=ts_1d_uQ,  # this is stats time series ....with no stats...
             spectra=self.multiple_spectra,
             meta=bare_attrs,
         )
-        # self.hermes_eea_data.timeseries["hermes_eea_stats"].meta.update(
+        # self.gdctb_cape_eea_data.timeseries["gdctb_cape_eea_stats"].meta.update(
         #    {"CATDESC": "Sum of skymap particle count for each sweep"}
         # )
 
-    def _hermes_eea_spectra(self):
+    def _gdctb_cape_eea_spectra(self):
         """
         EEA multi-dimensional variables
         This is a solution for loading multi-dimension variables and their metadata into CDF
@@ -90,44 +90,44 @@ class Hermes_EEA_Data_Processor:
         self.multiple_spectra = NDCollection(
             [
                 (
-                    "hermes_eea_step_times",
+                    "gdctb_cape_eea_step_times",
                     NDCube(
                         data=np.array(self.EEA.usec),
                         wcs=WCS(naxis=2),
                         meta={
-                            "CATDESC": DERIVED_SPECTRA_CATDESC["hermes_eea_step_times"]
+                            "CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_step_times"]
                         },
                         unit=astropy_units.s,
                     ),
                 ),
                 (
-                    "hermes_eea_energy_profile",
+                    "gdctb_cape_eea_energy_profile",
                     NDCube(
                         data=np.array(self.EEA.EnergyLabels),
                         wcs=WCS(naxis=2),
                         meta={
                             "CATDESC": DERIVED_SPECTRA_CATDESC[
-                                "hermes_eea_energy_profile"
+                                "gdctb_cape_eea_energy_profile"
                             ]
                         },
                         unit=astropy_units.eV,
                     ),
                 ),
                 (
-                    "hermes_eea_deflection_angles",
+                    "gdctb_cape_eea_deflection_angles",
                     NDCube(
                         data=np.array(self.EEA.SunAngles),
                         wcs=WCS(naxis=2),
                         meta={
                             "CATDESC": DERIVED_SPECTRA_CATDESC[
-                                "hermes_eea_deflection_angles"
+                                "gdctb_cape_eea_deflection_angles"
                             ]
                         },
                         unit=astropy_units.deg,
                     ),
                 ),
                 (
-                    "hermes_eea_accum",
+                    "gdctb_cape_eea_accum",
                     NDCube(
                         data=np.array(self.EEA.ACCUM),
                         wcs=WCS(naxis=3),
@@ -136,7 +136,7 @@ class Hermes_EEA_Data_Processor:
                     ),
                 ),
                 (
-                    "hermes_eea_counter1",
+                    "gdctb_cape_eea_counter1",
                     NDCube(
                         data=np.array(self.EEA.Counter1),
                         wcs=WCS(naxis=2),
@@ -145,7 +145,7 @@ class Hermes_EEA_Data_Processor:
                     ),
                 ),
                 (
-                    "hermes_eea_counter2",
+                    "gdctb_cape_eea_counter2",
                     NDCube(
                         data=np.array(self.EEA.Counter2),
                         wcs=WCS(naxis=2),
@@ -154,20 +154,20 @@ class Hermes_EEA_Data_Processor:
                     ),
                 ),
                 (
-                    "hermes_eea_pulse_a",
+                    "gdctb_cape_eea_pulse_a",
                     NDCube(
                         data=np.array(self.EEA.PulseA),
                         wcs=WCS(naxis=2),
-                        meta={"CATDESC": DERIVED_SPECTRA_CATDESC["hermes_eea_pulse_a"]},
+                        meta={"CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_pulse_a"]},
                         unit=astropy_units.dimensionless_unscaled,
                     ),
                 ),
                 (
-                    "hermes_eea_pulse_b",
+                    "gdctb_cape_eea_pulse_b",
                     NDCube(
                         data=np.array(self.EEA.PulseB),
                         wcs=WCS(naxis=2),
-                        meta={"CATDESC": DERIVED_SPECTRA_CATDESC["hermes_eea_pulse_b"]},
+                        meta={"CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_pulse_b"]},
                         unit=astropy_units.dimensionless_unscaled,
                     ),
                 ),

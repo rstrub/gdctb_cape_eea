@@ -19,7 +19,7 @@ time_format = %Y-%m-%d %H:%M:%S
 [downloads]
 
 ; Location to save download data to. Path should be specified relative to the
-; HERMES working directory.
+; GDCTB_CAPE working directory.
 ; Default value: data/
 download_dir = data
 
@@ -46,7 +46,7 @@ log_exceptions = True
 log_to_file = True
 
 # The file to log messages to
-log_file_path = hermes.log
+log_file_path = gdctb_cape.log
 
 # Threshold for logging messages to log_file_path
 log_file_level = INFO

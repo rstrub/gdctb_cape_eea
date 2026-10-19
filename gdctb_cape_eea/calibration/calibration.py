@@ -28,7 +28,7 @@ from gdctb_cape_eea.Stepper.StepperTable import get_unique_list
 
 # cdflib -> spacepy
 from spacepy.pycdf import lib
-from gdctb_cape_eea.calibration.build_spectra import Hermes_EEA_Data_Processor
+from gdctb_cape_eea.calibration.build_spectra import GDCTB_cape_EEA_Data_Processor
 from astropy.time import Time
 
 
@@ -87,7 +87,7 @@ def get_apid_for_file(data_filename) -> int:
 def process_file(data_filename: Path) -> list:
     """
     This is the entry point for the pipeline processing.
-    It runs all of the various processing steps required to create a L1A Hermes CDF File.
+    It runs all of the various processing steps required to create a L1A GDCTB_cape CDF File.
     calls:
 
     .. code-block:: python
@@ -98,9 +98,9 @@ def process_file(data_filename: Path) -> list:
             l0_sci_data_to_cdf(...)
                 SkymapFactory(...)
                 # Use SWXData to populate CDF output file
-                Hermes_EEA_Data_Processor(...).build_HermesData()
+                GDCTB_cape_EEA_Data_Processor(...).build_GDCTB_capeData()
                 # Write the File
-                hermes_eea_data.save(...)
+                gdctb_cape_eea_data.save(...)
         # A Custom EEA SkymapFactory
         # SWXData
 
@@ -363,7 +363,7 @@ def l0_hk_data_to_cdf(
     bare_attrs = SWXData.global_attribute_template(gdctb_cape_eea.INST_NAME, "l1", "1.0.0")
     # Distinguishes this from the sci L1 CDF in the output filename (Logical_file_id).
     bare_attrs["Instrument_mode"] = "hk"
-    hermes_eea_hk_data = SWXData(timeseries=hk_timeseries, meta=bare_attrs)
+    gdctb_cape_eea_hk_data = SWXData(timeseries=hk_timeseries, meta=bare_attrs)
 
     hk_catdesc = _read_hk_field_catdesc()
     hk_fill_fields = _read_hk_fill_field_names()
@@ -379,8 +379,8 @@ def l0_hk_data_to_cdf(
         if field in ("SHCOARSE", "SHFINE") or field in hk_fill_fields:
             continue
         try:
-            hermes_eea_hk_data.add_measurement(
-                f"hermes_eea_{field.lower()}",
+            gdctb_cape_eea_hk_data.add_measurement(
+                f"gdctb_cape_eea_{field.lower()}",
                 astropy_units.Quantity(values, astropy_units.dimensionless_unscaled),
                 meta={"CATDESC": hk_catdesc.get(field, f"HK field {field}")},
             )
@@ -388,7 +388,7 @@ def l0_hk_data_to_cdf(
             raise ValueError(f"Could not add HK field {field}") from e
 
     try:
-        cdf_path = hermes_eea_hk_data.save(destination_dir, True)
+        cdf_path = gdctb_cape_eea_hk_data.save(destination_dir, True)
     except Exception as e:
         log.error(e)
         sys.exit(2)
@@ -460,12 +460,12 @@ def l0_sci_data_to_cdf(
 
         # https://swxsoc.readthedocs.io/en/latest/user-guide/reading_writing_data.html
         # https://swxsoc.readthedocs.io/en/latest/generated/api/swxsoc.swxdata.SWXData.html#swxsoc.swxdata.SWXData
-        hermes_eea_factory = Hermes_EEA_Data_Processor(myEEA)
-        hermes_eea_factory.build_HermesData()
+        gdctb_cape_eea_factory = GDCTB_cape_EEA_Data_Processor(myEEA)
+        gdctb_cape_eea_factory.build_GDCTB_capeData()
 
         try:
             # this writes out the data to CDF file format
-            cdf_path = hermes_eea_factory.hermes_eea_data.save(
+            cdf_path = gdctb_cape_eea_factory.gdctb_cape_eea_data.save(
                 output_path=destination_dir, overwrite=True
             )
         except Exception as e:

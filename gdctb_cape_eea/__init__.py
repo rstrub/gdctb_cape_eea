@@ -35,7 +35,7 @@ MISSION_NAME = "GDCTB"
 INSTRUMENT_NAME = "cape_eea"
 
 # Kept as a separate alias (rather than inlining INSTRUMENT_NAME everywhere) to mirror
-# the ported hermes_eea code's INST_NAME/INST_SHORTNAME/INST_TARGETNAME naming, and to
+# the ported gdctb_cape_eea code's INST_NAME/INST_SHORTNAME/INST_TARGETNAME naming, and to
 # match swxsoc's {mission}_{instrument} package-naming convention (get_instrument_package()):
 # the registered instrument "name" must equal this package's own name suffix ("cape_eea")
 # so that, once available, get_instrument_package("cape_eea") resolves to "gdctb_cape_eea".

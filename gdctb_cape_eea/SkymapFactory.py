@@ -15,9 +15,9 @@ from gdctb_cape_eea.io.EEA import (
 
 def skymap_factory(l0_cdf, stepper, myEEA):
     """This may eventually be handled in a python multiprocessor module instance:
-    ['Epoch', 'Epoch_plus_var', 'Epoch_minus_var', 'hermes_eea_step_counter',
-     'hermes_eea_counter1', 'hermes_eea_counter2', 'hermes_eea_accumulations',
-     'hermes_ eea_sector_index', 'hermes_eea_sector_label'])
+    ['Epoch', 'Epoch_plus_var', 'Epoch_minus_var', 'gdctb_cape_eea_step_counter',
+     'gdctb_cape_eea_counter1', 'gdctb_cape_eea_counter2', 'gdctb_cape_eea_accumulations',
+     'gdctb_cape_ eea_sector_index', 'gdctb_cape_eea_sector_label'])
 
     Parameters
     -----------

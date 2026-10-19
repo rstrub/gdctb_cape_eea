@@ -9,7 +9,7 @@ PULSE_B_CHANNEL = N_AZIMUTH  # 32
 PULSE_A_CHANNEL = N_AZIMUTH + 1  # 33
 MAX_STEPS = 256
 REAL4FILL = -1e31
-# this large negative number is cdfepoch of 9999-12-31T23:59:59.999999999 which is the fillvalue from...Hermes/Astropy or something
+# this large negative number is cdfepoch of 9999-12-31T23:59:59.999999999 which is the fillvalue from...GDCTB_cape/Astropy or something
 EPOCHTIMEFILL = -9223372036854775808
 INTFILL = 65535
 
@@ -21,14 +21,14 @@ class EEA:
 
     def __init__(self, conf):
         self.Epoch = []  # the first of each sweep, the first of each of the 164 times,
-        #                 when hermes_eea_intgr_or_stepper = 1 and  hermes_eea_step_counter = 0
+        #                 when gdctb_cape_eea_intgr_or_stepper = 1 and  gdctb_cape_eea_step_counter = 0
         self.Generation_date = None
         self.Logical_file_id = None
         self.Data_version = None
         # ener, defl
         self.usec = (
             []
-        )  # [ 41,  4 ] each of the 164 times, whenever hermes_eea_intgr_or_stepper == 1
+        )  # [ 41,  4 ] each of the 164 times, whenever gdctb_cape_eea_intgr_or_stepper == 1
         self.PulseA = (
             []
         )  # [n_sweeps, MAX_STEPS] TOF channel A overflow counter (ACCUM bin 33)
