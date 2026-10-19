@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -8,16 +7,12 @@
 import os
 import sys
 
-# -- Environmental Variables ------------------------------------------------
-# Set CDF Library Path
-os.environ["CDF_LIB"] = "../cdf/lib"
-
 sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "gdctb_cape_eea"
 copyright = ""
-author = "The GDCTB Team"
+author = "The GDCTB cape_eea Team"
 
 # The full version, including alpha/beta/rc tags
 from gdctb_cape_eea import __version__
@@ -44,9 +39,6 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
 ]
-
-# Set automodapi to generate files inside the generated directory
-automodapi_toctreedirnm = "generated/api"
 
 # Set automodapi to generate files inside the generated directory
 # automodapi_toctreedirnm = "_build/html/api"
@@ -102,25 +94,38 @@ intersphinx_mapping = {
     ),
     "astropy": ("http://docs.astropy.org/en/stable/", None),
     "sunpy": ("https://docs.sunpy.org/en/stable/", None),
-    "swxsoc": ("https://swxsoc.readthedocs.io/en/latest/", None),
 }
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "bizstyle"
-html_static_path = ["_static"]
+html_theme = "pydata_sphinx_theme"
 
-html_logo = "logo/hermes_logo.png"
-html_favicon = "logo/favicon.ico"
-html_css_files = [
-    "css/custom.css",
-]
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ["_static"]
+
+# html_logo = "logo/cape_eea_logo.png"
+# html_favicon = "logo/favicon.ico"
+# html_css_files = [
+#    "css/custom.css",
+# ]
+
+html_theme_options = {
+    "announcement": "This package is under active development.  If you'd like to contribute, check out our <a href='https://github.com/GDC-Trailblazer/gdctb_cape_eea'>GitHub repository</a>.",
+    "use_edit_page_button": True,
+    "back_to_top_button": True,
+}
+
+html_context = {
+    "display_github": True,
+    "github_user": "GDCTB",
+    "github_repo": "gdctb_cape_eea",
+    "github_version": "main",
+    "conf_py_path": "/docs/",
+}
 
 # Render inheritance diagrams in SVG
 graphviz_output_format = "svg"
