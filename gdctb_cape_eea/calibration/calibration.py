@@ -238,7 +238,7 @@ def parse_l0_sci_packets(data_filename: Path) -> dict:
     log.info(f"Parsing packets from file:{data_filename}.")
 
     pkt = ccsdspy.FixedLength.from_file(
-        Path(gdctb_cape_eea._data_directory) / "hermes_EEA_sci_packet_def.csv"
+        Path(gdctb_cape_eea._data_directory) / "gdctb_cape_EEA_sci_packet_def.csv"
     )
     data = pkt.load(data_filename, include_primary_header=True)
 
@@ -283,7 +283,7 @@ def parse_hk_packets(data_filename: Path) -> dict:
     log.info(f"Parsing HK packets from file:{data_filename}.")
 
     pkt = ccsdspy.FixedLength.from_file(
-        os.path.join(gdctb_cape_eea._data_directory, "hermes_EEA_hk_packet_def.csv")
+        os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape_EEA_hk_packet_def.csv")
     )
     data = pkt.load(data_filename, include_primary_header=True)
 
@@ -307,23 +307,23 @@ def parse_hk_packets(data_filename: Path) -> dict:
 
 def _read_hk_field_catdesc() -> dict:
     """Read the CATDESC text for each HK field from the description column of
-    hermes_EEA_hk_packet_def.csv, so field descriptions stay in sync with the
+    gdctb_cape_EEA_hk_packet_def.csv, so field descriptions stay in sync with the
     packet definition instead of being duplicated in code.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "hermes_EEA_hk_packet_def.csv")
+    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape_EEA_hk_packet_def.csv")
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {row["name"].strip(): row["description"].strip() for row in reader}
 
 
 def _read_hk_fill_field_names() -> set:
-    """Names of HK fields declared as data_type "fill" in hermes_EEA_hk_packet_def.csv.
+    """Names of HK fields declared as data_type "fill" in gdctb_cape_EEA_hk_packet_def.csv.
 
     ccsdspy only bitmasks "uint"/"int" fields, not "fill", so sub-byte fill fields come
     back containing raw, unmasked bits from whatever neighboring field shares that byte.
     Their decoded values are meaningless and shouldn't be written out as measurements.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "hermes_EEA_hk_packet_def.csv")
+    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape_EEA_hk_packet_def.csv")
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {

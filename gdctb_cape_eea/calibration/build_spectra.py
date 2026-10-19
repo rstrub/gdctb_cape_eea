@@ -15,10 +15,10 @@ import gdctb_cape_eea
 
 def _read_sci_field_catdesc() -> dict:
     """Read the CATDESC text for each field from the description column of
-    hermes_EEA_sci_packet_def.csv, so descriptions stay in sync with the packet
+    gdctb_cape_EEA_sci_packet_def.csv, so descriptions stay in sync with the packet
     definition instead of being duplicated in code.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "hermes_EEA_sci_packet_def.csv")
+    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape_EEA_sci_packet_def.csv")
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {row["name"].strip(): row["description"].strip() for row in reader}
@@ -26,7 +26,7 @@ def _read_sci_field_catdesc() -> dict:
 
 # CATDESC text for spectra variables that are derived (via SkymapFactory/StepperTable)
 # rather than decoded directly from a packet field, so they have no row in
-# hermes_EEA_sci_packet_def.csv or the stepper table files.
+# gdctb_cape_EEA_sci_packet_def.csv or the stepper table files.
 DERIVED_SPECTRA_CATDESC = {
     "gdctb_cape_eea_step_times": "Raw Per-Step Packet Time",
     "gdctb_cape_eea_energy_profile": "Energy Profile",

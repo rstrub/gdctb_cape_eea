@@ -64,7 +64,7 @@ def test_read_ccsdspy(small_level0_file):
     # HK and science packets use different fixed-length layouts.
     is_hk = apid in APIDS["HK"]
     packet_def_csv = (
-        "hermes_EEA_hk_packet_def.csv" if is_hk else "hermes_EEA_sci_packet_def.csv"
+        "gdctb_cape_EEA_hk_packet_def.csv" if is_hk else "gdctb_cape_EEA_sci_packet_def.csv"
     )
     pkt = ccsdspy.FixedLength.from_file(
         os.path.join(gdctb_cape_eea._data_directory, packet_def_csv)
