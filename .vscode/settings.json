@@ -1,13 +1,13 @@
 {
     "python.testing.pytestArgs": [
-        "hermes_eea"
+        "gdctb_cape_eea"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./hermes_eea",
+        "./gdctb_cape_eea",
         "-p",
         "*test*.py"
     ]
