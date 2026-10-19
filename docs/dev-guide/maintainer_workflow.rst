@@ -10,47 +10,6 @@ Seeing as how you're a maintainer, you should be completely on top of the basic 
 
 .. _git workflow: https://docs.astropy.org/en/stable/development/workflow/development_workflow.html#development-workflow
 
-
-Testing Calibration Code via Pull Requests
-==========================================
-
-Our Calibration Continuous Integration/Continuous Deployment (CI/CD) Pipeline is specifically designed to ensure the functionality of calibration code changes introduced through pull requests. It tests it within the same AWS Processing Lambda function container that will run in the cloud.
-
-You can find the pipeline in the `.github/workflows` directory of the repository. The pipeline is written in YAML and is named `calibration.yml`.
-
-Automated Execution
--------------------
-
-When a pull request is created against the `main` branch, the pipeline automatically executes the included calibration code. This step is crucial for verifying that the code operates correctly without any errors.
-
-Results in Comments
--------------------
-
-If the execution is successful and free of errors, the pipeline marks the check as passed. It then automatically generates a comment on the pull request, which includes a zip file attachment. This file contains both the original and calibrated versions of the file, demonstrating the calibration's effect.
-
-If it fails, the pipeline marks the check as failed and you can further investigate the issue within the logs of the failed pipeline test.
-
-Calibration Data Files
-----------------------
-
-The calibration relies on specific binary files located in the project's ``data`` directory. To test new calibration code or changes:
-
-1. Replace the existing test file in the ``data`` directory with a new binary file.
-2. Submit a new pull request.
-
-The pipeline will recognize the new file and use it for testing the calibration code.
-
-Test File Specifications
-------------------------
-
-The test file should be a binary file that closely mirrors the data the calibration code will be applied to. It must follow the ``l0`` naming convention, such as ``hermes_EEA_l0_2023042-000000_v0.bin``.
-
-Pull Request Detection and Processing
--------------------------------------
-
-When a pull request is made with a new file or changes to the calibration code, the pipeline automatically detects and uses the new or modified file for calibration testing. This ensures thorough vetting of code changes and maintains the system's reliability and accuracy.
-
-
 Integrating changes via the web interface (recommended)
 =======================================================
 
@@ -65,7 +24,6 @@ To check out a particular pull request to test out locally::
     $ git checkout pr/999
     Branch pr/999 set up to track remote branch pr/999 from upstream.
     Switched to a new branch 'pr/999'
-
 
 When to remove or combine/squash commits
 ----------------------------------------
@@ -167,16 +125,7 @@ Updating and Maintaining the Changelog
 The changelog will be read by users, so this description should be aimed at users instead of describing internal changes which are only relevant to the developers.
 
 The current changelog is kept in the file "CHANGELOG.rst" at the root of the repository.
-You do not need to update this file as we use `towncrier`_ to update our changelog.
 This is built and embedded into our documentation.
-
-Towncrier will automatically reflow your text, so it will work best if you stick to a single paragraph, but multiple sentences and links are OK and encouraged.
-You can install towncrier and then run ``towncrier --draft`` if you want to get a preview of how your change will look in the final release notes.
-This tool was built by the SunPy community and they provide a great guide on how to use it.
-
-`Instructions on how to write a changelog. <https://github.com/sunpy/sunpy/blob/main/changelog/README.rst>`__.
-
-.. _towncrier: https://pypi.org/project/towncrier/
 
 Releases
 ========
