@@ -20,6 +20,7 @@ Usage
 import argparse
 import json
 import sys
+from contextlib import nullcontext
 from datetime import datetime
 
 TIMESTAMP_FORMAT = "%m/%d/%Y, %H:%M:%S.%f"
@@ -42,9 +43,9 @@ def jsonl_to_bin(
     packet_name=None,
     apid=None,
     max_packets=None,
-    start_time: datetime = None,
-    end_time: datetime = None,
-    timestamps_out: str = None,
+    start_time: datetime | None = None,
+    end_time: datetime | None = None,
+    timestamps_out: str | None = None,
 ) -> int:
     """Write the hex-decoded bytes of matching packets, in file order, to `output_filename`.
 
@@ -69,37 +70,36 @@ def jsonl_to_bin(
         sys.set_int_max_str_digits(0)  # some "contents" fields are huge integers
 
     n_packets = 0
-    timestamps_fh = open(timestamps_out, "w") if timestamps_out else None
-    try:
-        with open(input_filename) as fh_in, open(output_filename, "wb") as fh_out:
-            for line in fh_in:
-                line = line.strip()
-                if not line:
+    with (
+        open(input_filename) as fh_in,
+        open(output_filename, "wb") as fh_out,
+        open(timestamps_out, "w") if timestamps_out else nullcontext() as timestamps_fh,
+    ):
+        for line in fh_in:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue  # the log has a handful of malformed/truncated lines
+            for entry in record.values():
+                if packet_name is not None and entry["name"] != packet_name:
                     continue
-                try:
-                    record = json.loads(line)
-                except json.JSONDecodeError:
-                    continue  # the log has a handful of malformed/truncated lines
-                for entry in record.values():
-                    if packet_name is not None and entry["name"] != packet_name:
+                if apid is not None and entry["contents"]["app_id"] != apid:
+                    continue
+                if start_time is not None or end_time is not None:
+                    entry_time = parse_timestamp(entry["timestamp"])
+                    if start_time is not None and entry_time < start_time:
                         continue
-                    if apid is not None and entry["contents"]["app_id"] != apid:
+                    if end_time is not None and entry_time > end_time:
                         continue
-                    if start_time is not None or end_time is not None:
-                        entry_time = parse_timestamp(entry["timestamp"])
-                        if start_time is not None and entry_time < start_time:
-                            continue
-                        if end_time is not None and entry_time > end_time:
-                            continue
-                    fh_out.write(bytes.fromhex(entry["hex"]))
-                    if timestamps_fh is not None:
-                        timestamps_fh.write(entry["timestamp"] + "\n")
-                    n_packets += 1
-                    if max_packets is not None and n_packets >= max_packets:
-                        return n_packets
-    finally:
-        if timestamps_fh is not None:
-            timestamps_fh.close()
+                fh_out.write(bytes.fromhex(entry["hex"]))
+                if timestamps_fh is not None:
+                    timestamps_fh.write(entry["timestamp"] + "\n")
+                n_packets += 1
+                if max_packets is not None and n_packets >= max_packets:
+                    return n_packets
 
     return n_packets
 

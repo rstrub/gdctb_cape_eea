@@ -28,8 +28,8 @@ def read_file(data_filename: Path):
     try:
         with open(data_filename) as fh:
             return fh.readlines()
-    except Exception: # noqa: BLE001
-        raise Exception("Could not find: " + data_filename)
+    except (FileNotFoundError, PermissionError) as err:
+        raise FileNotFoundError(f"Could not read: {data_filename}") from err
 
 
 def read_ccsds(filename: Path, pkt_def: FixedLength):

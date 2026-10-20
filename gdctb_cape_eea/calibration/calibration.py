@@ -154,7 +154,7 @@ def process_file(data_filename: Path) -> list:
 
 
 def calibrate_file(
-    data_filename: Path, destination_dir, stepper: StepperTable = None, apid: int = None
+    data_filename: Path, destination_dir, stepper: StepperTable = None, apid: int | None = None
 ) -> Path:
     """
     Given an input data file, raise it to the next level
@@ -518,10 +518,7 @@ def is_binary_file(file_path, block_size=1024):
                 return True
 
             # If any byte is outside the valid ASCII range (0-127), it's binary
-            if any(byte > 127 for byte in block):
-                return True
-
-            return False
+            return any(byte > 127 for byte in block)
     except OSError:
         print(f"Error: Could not read file {file_path}")
         return False
@@ -538,10 +535,7 @@ def is_ascii_file(file_path, block_size=1024):
                 return False
 
             # ASCII characters only use byte values from 0 to 127
-            if any(byte > 127 for byte in block):
-                return False
-
-            return True
+            return not any(byte > 127 for byte in block)
     except OSError:
         print(f"Error: Could not read file {file_path}")
         return False

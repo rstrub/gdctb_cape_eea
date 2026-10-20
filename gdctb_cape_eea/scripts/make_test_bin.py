@@ -16,12 +16,12 @@ import argparse
 import os
 from datetime import UTC, datetime
 
-import hermes_eea
-from hermes_eea.util.jsonl_to_bin import jsonl_to_bin
+import gdctb_cape_eea
+from gdctb_cape_eea.scripts.jsonl_to_bin import jsonl_to_bin
 
 
 def make_l0_filename(time: str, version: int) -> str:
-    """Build a HERMES-compliant L0 packet filename, e.g. hermes_EEA_l0_2026023-000000_v0.bin"""
+    """Build a HERMES-compliant L0 packet filename, e.g. gdctb_cape_eaa_EEA_l0_2026023-000000_v0.bin"""
     return f"hermes_EEA_l0_{time}_v{version}.bin"
 
 
@@ -30,8 +30,8 @@ if __name__ == "__main__":
     parser.add_argument("input_filename", help="Path to the JSONL telemetry log")
     parser.add_argument(
         "--output-dir",
-        default=hermes_eea._data_directory,
-        help="Directory to write the .bin file into (default: hermes_eea/data)",
+        default=gdctb_cape_eea._data_directory,
+        help="Directory to write the .bin file into (default: gdctb_cape_eea/data)",
     )
     parser.add_argument(
         "--time",

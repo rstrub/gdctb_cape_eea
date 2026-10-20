@@ -1,32 +1,37 @@
-import pytest
 import os
-from pathlib import Path
 import shutil
 import tempfile
 import time
+import warnings
+from pathlib import Path
+
 import ccsdspy
-import gdctb_cape_eea
-from gdctb_cape_eea.calibration.calibration import _peek_apid
-from gdctb_cape_eea.io import read_ccsds
-import gdctb_cape_eea.calibration as calib
-from gdctb_cape_eea import _data_directory, _calibration_directory
-from swxsoc.util.util import create_science_filename, parse_science_filename
-from spacepy import pycdf
-from gdctb_cape_eea import log
 import numpy as np
-from gdctb_cape_eea.Stepper.StepperTable import StepperTable, get_unique_list
+import pytest
+from spacepy import pycdf
+
+import gdctb_cape_eea
+import gdctb_cape_eea.calibration as calib
+from gdctb_cape_eea import _calibration_directory, _data_directory, log
 from gdctb_cape_eea.calibration.calibration import (
     APIDS,
-    get_stepper_table_for_file,
-    get_apid_for_file,
     CURRENT_STEPPER_TABLE_FILE,
+    get_apid_for_file,
+    get_stepper_table_for_file,
+    is_boot_packet,
 )
+from gdctb_cape_eea.io import read_ccsds
+from gdctb_cape_eea.Stepper.StepperTable import get_unique_list
 from gdctb_cape_eea.tests.conftest import TEST_PROCESSING
-from gdctb_cape_eea.calibration.calibration import ( is_boot_packet)
 
 # boot_packet.txt entries in TEST_PROCESSING contain just the stepper table filename to use for
 # whichever science files follow, until the next boot_packet.txt; persisted here to simulate the
 # instrument's real behavior of applying the last-commanded stepper table, not a per-file lookup.
+
+
+SKYMAP_VAR = "gdctb_cape_eea_accum"
+COUNTER_VAR = "gdctb_cape_eea_counter1"
+COUNTER_ABS_TOLERANCE = 2
 
 
 @pytest.fixture(
@@ -102,7 +107,7 @@ def test_process_file(small_level0_file):
 
 def verify_l1a(data_filename, output_l1a):
 
-    from gdctb_cape_eea.io.EEA import REAL4FILL, EPOCHTIMEFILL, INTFILL
+    from gdctb_cape_eea.io.EEA import EPOCHTIMEFILL, INTFILL, REAL4FILL
 
     assert os.path.getsize(output_l1a) > 275000
     with pycdf.CDF(str(output_l1a)) as cdf:
@@ -112,24 +117,17 @@ def verify_l1a(data_filename, output_l1a):
         length_time = (cdf["Epoch"][-1] - cdf["Epoch"][0]).total_seconds()
 
         assert n_sweeps > 0
-        log.info("Length of CDF Variables: %d" % n_sweeps)
-        log.info("Time   of CDF Variables: %d" % length_time)
+        log.info(f"Length of CDF Variables: {n_sweeps}")
+        log.info(f"Time   of CDF Variables: {length_time}")
 
         avg_sweep_seconds = length_time / max(n_sweeps - 1, 1)
-        log.info("Average time per sweep: %.3f sec" % avg_sweep_seconds)
+        log.info(f"Average time per sweep: {avg_sweep_seconds:.3f} sec")
         assert avg_sweep_seconds > 0  # time should move forward, sweep to sweep
 
         # review variables
         variable_list = [item[0] for item in list(cdf.items())]
         for var in variable_list:
             log.info(var)
-
-            # look at the counts
-            # best guess at counter variable
-            if "count" in var:
-                counter = var
-            if "accum" in var:
-                skymap = var
 
             stepper = get_stepper_table_for_file(CURRENT_STEPPER_TABLE_FILE)
             assert cdf[var].shape[0] == n_sweeps
@@ -141,23 +139,40 @@ def verify_l1a(data_filename, output_l1a):
                     INTFILL,
                 ]
 
-        try:
-            for i in range(0, n_sweeps):
-                skymap_vals = cdf[skymap][i]
-                counter_vals = cdf[counter][i]
-                total = np.sum(skymap_vals[skymap_vals != REAL4FILL])
-                cntsum = np.sum(counter_vals[counter_vals != INTFILL])
-                # 40% seems like a lot... This is because this is not just for one packet but a whole sweep
-                # that's why I created my STATS variable.
-                # is nominal but 40% is possible for small counts
-                diff = int(0.4 * total)
+        if SKYMAP_VAR not in variable_list:
+            log.info(f"No {SKYMAP_VAR} in {output_l1a}; skipping the counter check (expected for HK files)")
+        else:
+            passed_sweeps = []
+            failed_sweeps = []
+            for i in range(n_sweeps):
+                skymap_vals = cdf[SKYMAP_VAR][i]
+                counter_vals = cdf[COUNTER_VAR][i]
+                # sum both over the same steps: the ones the counter actually reported
+                valid = counter_vals != INTFILL
+                total = np.sum(np.where(skymap_vals == REAL4FILL, 0, skymap_vals)[valid])
+                cntsum = np.sum(counter_vals[valid])
+                # The counter runs a little high relative to the 32 azimuth bins, and this is a whole
+                # sweep (not one packet), so allow 10%, with a small absolute floor for tiny totals.
+                diff = max(int(0.1 * total), COUNTER_ABS_TOLERANCE)
 
-                # log.info("totals: skymap:%d counter:%d" % (total, cntsum))
-                # assert abs(cntsum - total) <= diff
+                log.info(f"totals: skymap:{total} counter:{cntsum}")
+                if abs(cntsum - total) <= diff:
+                    passed_sweeps.append(i)
+                else:
+                    failed_sweeps.append((i, int(total), int(cntsum)))
 
-        except NameError as e:
-            log.info(f"Error verifying L1A file {output_l1a}: {e} skymap not defined")
-            log.info("If hk in filename then it should fail")
+            log.info(
+                f"Counter vs skymap check on {output_l1a}: "
+                f"{len(passed_sweeps)} of {n_sweeps} sweeps passed, {len(failed_sweeps)} failed"
+            )
+            for i, total, cntsum in failed_sweeps:
+                log.info(f"  failed sweep {i}: skymap:{total} counter:{cntsum}")
+            if failed_sweeps:
+                warnings.warn(
+                    f"{len(failed_sweeps)} of {n_sweeps} sweeps failed the counter vs skymap check; "
+                    f"first few (sweep, skymap, counter): {failed_sweeps[:5]}",
+                    stacklevel=2,
+                )
 
     # best-effort local copy for manual inspection; _data_directory resolves regardless of cwd
     try:

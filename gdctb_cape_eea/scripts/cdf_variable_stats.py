@@ -28,7 +28,7 @@ import numpy as np
 from spacepy import pycdf
 
 
-def compute_variable_stats(cdf_path: str, variables: list = None) -> dict:
+def compute_variable_stats(cdf_path: str, variables: list | None = None ) -> dict:
     """
     Compute non-zero, non-fill statistics for each requested (or all numeric) variable in a CDF file.
 
