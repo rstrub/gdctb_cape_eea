@@ -14,8 +14,9 @@ from swxsoc import print_config
 
 # Force the mission environment variable and reconfigure regardless of import order
 os.environ["SWXSOC_MISSION"] = "gdctb"
-_reconfigure = getattr(swxsoc, "reconfigure", None) or swxsoc._reconfigure
-_reconfigure()
+reconfigure = getattr(swxsoc, "reconfigure", None) 
+# Load the config.yml
+reconfigure()
 
 # Load user configuration
 config = swxsoc.config
