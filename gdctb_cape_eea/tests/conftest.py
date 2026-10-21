@@ -1,5 +1,6 @@
 
 TEST_PROCESSING = [
+    "gdctb_cape-eea_l0_20261015-234049_v0.bin",
     "ptb_esastepped_undeflected_stepper.txt",
     "gdctb_cape-eea_l0_2026161-142204_v0.bin",
     "ptb_esastepped_undeflected_stepper.txt",

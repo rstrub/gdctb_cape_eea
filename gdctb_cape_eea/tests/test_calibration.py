@@ -5,6 +5,7 @@ import time
 import warnings
 from pathlib import Path
 
+import astropy.units as astropy_units
 import ccsdspy
 import numpy as np
 import pytest
@@ -32,6 +33,34 @@ from gdctb_cape_eea.tests.conftest import TEST_PROCESSING
 SKYMAP_VAR = "gdctb_cape_eea_accum"
 COUNTER_VAR = "gdctb_cape_eea_counter1"
 COUNTER_ABS_TOLERANCE = 2
+
+HK_FIELD_OVERRIDES = {
+    "TIME_DUR": {"catdesc": "packet_time_ms", "unit": astropy_units.ms},
+    "PPS_DUR": {
+        "catdesc": (
+            "Instrument sub-second clock ticks elapsed since the arrival of the last "
+            "1 Hz Pulse-Per-Second (PPS) synchronization signal."
+        ),
+        "unit": astropy_units.s / 256,
+    },
+    "T_FEE": {
+        "catdesc": "EEA Front End Electronics Board temp",
+        "unit": astropy_units.def_unit("deg_C"),
+        "scale": -0.025,   # Example slope coefficient
+        "offset": 107.5,   # Adjust based on calibration sheets to match ~20°C
+    },
+    "V_3_3V": {"unit": astropy_units.V, "scale": 0.000144},
+    "V_3_3I": {"unit": astropy_units.mA, "scale": 0.018},
+    "V_5_7V": {"unit": astropy_units.V, "scale": 0.000858},
+    "V_5_7I": {"unit": astropy_units.mA, "scale": 0.083869},
+    "V_NS_7V": {"unit": astropy_units.V, "scale": -0.000529},
+    "V_11V": {"unit": astropy_units.V, "scale": 0.000551},
+    "V_11": {"unit": astropy_units.mA, "scale": 0.049122},
+    "T_LVPS": {"unit": astropy_units.def_unit("deg_C"), "scale": -0.0025, "offset": 98.4},
+    "ANODE_V": {"unit": astropy_units.V, "scale": 0.0116},
+    "ESA_BULK_V": {"unit": astropy_units.V, "scale": 0.0154},
+    "DEF_BULK_V": {"unit": astropy_units.V, "scale": 0.0232},
+}
 
 
 @pytest.fixture(
@@ -141,6 +170,7 @@ def verify_l1a(data_filename, output_l1a):
 
         if SKYMAP_VAR not in variable_list:
             log.info(f"No {SKYMAP_VAR} in {output_l1a}; skipping the counter check (expected for HK files)")
+            verify_hk(cdf)
         else:
             passed_sweeps = []
             failed_sweeps = []
@@ -179,6 +209,87 @@ def verify_l1a(data_filename, output_l1a):
         shutil.copy(output_l1a, _data_directory)
     except OSError as e:
         log.info(f"Could not save a local debug copy of {output_l1a}: {e}")
+
+
+# Raw HK analog/thermistor monitors are all 16-bit unsigned counts (see
+# gdctb_cape-eea_hk_packet_def.csv), so this is the largest raw value any of them can report.
+RAW_FULL_SCALE = 2**16 - 1
+
+# Sane engineering-unit windows for the fixed supply rails and thermistors, derived from each
+# field's HK_FIELD_OVERRIDES scale/offset (chosen so nominal raw counts land near the rail's
+# design voltage, e.g. V_3_3V's scale centers on 3.3V) plus margin for normal variation.
+FIXED_RAIL_RANGES = {
+    "T_FEE": (-40, 85),  # deg C, typical spacecraft electronics operating range
+    "T_LVPS": (-40, 85),  # deg C
+    "V_3_3V": (2.8, 3.8),  # nominal 3.3V bus
+    "V_5_7V": (5.0, 6.4),  # nominal 5.7V bus
+    "V_NS_7V": (-6.4, -5.0),  # nominal -5.7V bus
+    "V_11V": (9.5, 12.5),  # nominal 11V bus
+}
+# Current monitors should be non-negative and nowhere near the digitizer's full-scale count
+# (pinning at full scale usually indicates an overcurrent fault or a disconnected sensor).
+CURRENT_MONITOR_FIELDS = {"V_3_3I", "V_5_7I", "V_11"}
+# ANODE_V/ESA_BULK_V/DEF_BULK_V track the commanded ESA/deflector sweep voltage, so they vary
+# packet to packet instead of holding near one nominal value; just confirm they stay within the
+# physically valid 0-to-full-scale window implied by the monitor's own scale factor.
+SWEEP_MONITOR_FIELDS = {"ANODE_V", "ESA_BULK_V", "DEF_BULK_V"}
+
+
+def verify_hk(cdf):
+    """Apply the HK_FIELD_OVERRIDES scale/offset to the raw HK telemetry stored in an L1A HK
+    CDF and judge whether the resulting engineering-unit values are physically plausible for
+    CAPE-EEA housekeeping.
+
+    Parameters
+    ----------
+    cdf : spacepy.pycdf.CDF
+        An open L1A HK CDF (as written by `l0_hk_data_to_cdf`). HK fields are stored as raw,
+        uncalibrated counts under variable names `gdctb_cape_eea_<field>` (lowercased), matching
+        gdctb_cape-eea_hk_packet_def.csv.
+    """
+    for field, overrides in HK_FIELD_OVERRIDES.items():
+        var_name = f"gdctb_cape_eea_{field.lower()}"
+        if var_name not in cdf:
+            continue
+        raw = np.asarray(cdf[var_name][:], dtype=float)
+        scale = overrides.get("scale", 1.0)
+        offset = overrides.get("offset", 0.0)
+        values = raw * scale + offset
+
+        assert np.all(np.isfinite(values)), f"{field}: non-finite calibrated values"
+        log.info(
+            f"{field}: min={values.min():.4g} max={values.max():.4g} mean={values.mean():.4g} "
+            f"{overrides.get('unit', '')}"
+        )
+
+        if field in FIXED_RAIL_RANGES:
+            low, high = FIXED_RAIL_RANGES[field]
+            # Allow a small fraction of noisy/transient samples before failing outright.
+            n_out = int(np.sum((values < low) | (values > high)))
+            assert n_out / len(values) < 0.1, (
+                f"{field}: {n_out}/{len(values)} calibrated samples fall outside the expected "
+                f"[{low}, {high}] range"
+            )
+        elif field in CURRENT_MONITOR_FIELDS:
+            full_scale_value = RAW_FULL_SCALE * scale
+            assert np.all(values >= -1.0), f"{field}: negative current reading is non-physical"
+            assert values.max() < full_scale_value * 0.9, (
+                f"{field}: current reading near full-scale ({full_scale_value:.4g}), suggests "
+                "an overcurrent fault or bad calibration"
+            )
+        elif field in SWEEP_MONITOR_FIELDS:
+            full_scale_value = RAW_FULL_SCALE * scale
+            assert np.all(values >= -1.0), f"{field}: negative sweep voltage is non-physical"
+            assert np.all(values <= full_scale_value * 1.01), (
+                f"{field}: calibrated value exceeds the monitor's full-scale range "
+                f"({full_scale_value:.4g})"
+            )
+        elif field in ("PPS_DUR", "TIME_DUR"):
+            # These raw 16-bit counters measure elapsed time since the last PPS/time packet and
+            # have no scale/offset override, so the calibrated value is just the raw tick count.
+            # Real telemetry can have sparse PPS/time packets (as in this test data, which has
+            # intentional packet gaps), so only non-negativity is a reliable physical check here.
+            assert np.all(values >= 0), f"{field} must not be negative"
 
 
 def cleanup_retry(directory):
