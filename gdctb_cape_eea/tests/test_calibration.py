@@ -136,7 +136,7 @@ def test_process_file(small_level0_file):
 
 def verify_l1a(data_filename, output_l1a):
 
-    from gdctb_cape_eea.io.EEA import EPOCHTIMEFILL, INTFILL, REAL4FILL
+    from gdctb_cape_eea.io.eea import EPOCHTIMEFILL, INTFILL, REAL4FILL
 
     assert os.path.getsize(output_l1a) > 275000
     with pycdf.CDF(str(output_l1a)) as cdf:
@@ -185,7 +185,7 @@ def verify_l1a(data_filename, output_l1a):
                 # sweep (not one packet), so allow 10%, with a small absolute floor for tiny totals.
                 diff = max(int(0.1 * total), COUNTER_ABS_TOLERANCE)
 
-                log.info(f"totals: skymap:{total} counter:{cntsum}")
+                log.info(f"totals: kl:{total} counter:{cntsum}")
                 if abs(cntsum - total) <= diff:
                     passed_sweeps.append(i)
                 else:

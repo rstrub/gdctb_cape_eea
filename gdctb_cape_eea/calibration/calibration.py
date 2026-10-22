@@ -23,8 +23,8 @@ import gdctb_cape_eea.calibration as calib
 from gdctb_cape_eea import log
 from gdctb_cape_eea.calibration.build_spectra import GDCTB_cape_EEA_Data_Processor
 from gdctb_cape_eea.io import read_file
-from gdctb_cape_eea.io.EEA import EEA
-from gdctb_cape_eea.SkymapFactory import skymap_factory
+from gdctb_cape_eea.io.eea import EEA
+from gdctb_cape_eea.calibration.skymapfactory import SkymapFactory
 from gdctb_cape_eea.Stepper.StepperTable import StepperTable
 from gdctb_cape_eea.util.time import ccsds_to_cdf_time
 
@@ -433,7 +433,7 @@ def l0_sci_data_to_cdf(
 
         myEEA = EEA(file_metadata)
         # SkymapFactory, now as does FPI, also populates my EEA data model
-        skymap_factory(data, stepper, myEEA)
+        SkymapFactory(data, stepper, myEEA)
 
         # In the beginning, testing phase of this project, while we adjust things.
         # This will show us which packets have a workable amount of data

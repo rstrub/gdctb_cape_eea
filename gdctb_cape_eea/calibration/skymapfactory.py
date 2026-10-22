@@ -1,7 +1,7 @@
 import numpy as np
 
 from gdctb_cape_eea import log
-from gdctb_cape_eea.io.EEA import (
+from gdctb_cape_eea.io.eea import (
     EPOCHTIMEFILL,
     INTFILL,
     MAX_STEPS,
@@ -13,7 +13,7 @@ from gdctb_cape_eea.io.EEA import (
 from gdctb_cape_eea.util.time import ccsds_to_cdf_time
 
 
-def skymap_factory(l0_cdf, stepper, myEEA):
+def SkymapFactory(l0_cdf, stepper, myEEA):
     """This may eventually be handled in a python multiprocessor module instance:
     ['Epoch', 'Epoch_plus_var', 'Epoch_minus_var', 'gdctb_cape_eea_step_counter',
      'gdctb_cape_eea_counter1', 'gdctb_cape_eea_counter2', 'gdctb_cape_eea_accumulations',
