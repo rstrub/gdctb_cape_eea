@@ -22,9 +22,9 @@ import gdctb_cape_eea
 import gdctb_cape_eea.calibration as calib
 from gdctb_cape_eea import log
 from gdctb_cape_eea.calibration.build_spectra import GDCTB_cape_EEA_Data_Processor
+from gdctb_cape_eea.calibration.skymapfactory import SkymapFactory
 from gdctb_cape_eea.io import read_file
 from gdctb_cape_eea.io.eea import EEA
-from gdctb_cape_eea.calibration.skymapfactory import SkymapFactory
 from gdctb_cape_eea.Stepper.StepperTable import StepperTable
 from gdctb_cape_eea.util.time import ccsds_to_cdf_time
 
