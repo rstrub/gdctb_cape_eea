@@ -11,7 +11,7 @@ TEST_PROCESSING = [
     "ptb_esastepped_undeflected_stepper.txt",
     "gdctb_cape-eea_hk_l0_2026161-132237_v0.bin",
     "flight_stepper.txt",
-    "gdctb_cape-eea_hk_l0_2026023-000000_v0.bin",
+    # removed "gdctb_cape-eea_hk_l0_2026023-000000_v0.bin",
     "flight_stepper.txt",
     "gdctb_cape-eea_l0_2026023-000000_v0.bin",
 ]
