@@ -46,7 +46,7 @@ jobs:
         # Remove any previous entries for instrument package and add the new branch URL as the first entry
         sed -i "/${PACKAGE_NAME}/d" $REQUIREMENTS_FILE
         sed -i "1i ${PACKAGE_NAME}  @ $BRANCH_URL" $REQUIREMENTS_FILE
-    
+
         echo "Updated $REQUIREMENTS_FILE:"
         cat $REQUIREMENTS_FILE
     
@@ -129,7 +129,7 @@ jobs:
       run: echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
     
     - name: Comment PR
-      if: steps.test-lambda.outputs.test_success == 'true' && github.event_name == 'pull_request'
+      if: steps.test-lambda.outputs.test_success == 'true' && github.event_name == 'pull_request_target'
       uses: andyghc/actions-comment-pull-request@v3
       with:
         message: |
