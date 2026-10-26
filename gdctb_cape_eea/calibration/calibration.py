@@ -112,7 +112,7 @@ def process_file(data_filename: Path) -> list:
     -------
     output_files: `list[pathlib.Path]`
         Fully specificied filenames for the output CDF files.
-        The file contains CDF formatted file with n packets iincluding time and [41,4,32] skymap.
+        The file contains CDF formatted file with n packets including time and [41,4,32] skymap.
 
     """
     log.info(f"Processing file {data_filename}.")
@@ -155,7 +155,7 @@ def process_file(data_filename: Path) -> list:
 
 def calibrate_file(
     data_filename: Path,
-    destination_dir,
+    destination_dir: Path,
     stepper: StepperTable = None,
     apid: int | None = None,
 ) -> Path:
@@ -176,7 +176,7 @@ def calibrate_file(
         Fully specificied filename of the output file.
 
     """
-    log.info(f"Calibrating file:{data_filename}.")
+    log.info(f"Calibrating file: {data_filename}.")
     # stepper = StepperTable(gdctb_cape_eea.stepper_table)
 
     file_metadata = parse_science_filename(data_filename.name)
@@ -392,6 +392,7 @@ def l0_hk_data_to_cdf(
             raise ValueError(f"Could not add HK field {field}") from e
 
     try:
+        log.info(f"Writing HK CDF file to {destination_dir}.")
         cdf_path = gdctb_cape_eea_hk_data.save(destination_dir, True)
     except Exception as e:  # noqa: BLE001 - last-resort boundary: log any save failure and exit cleanly
         log.error(e)
@@ -458,6 +459,7 @@ def l0_sci_data_to_cdf(
 
         try:
             # this writes out the data to CDF file format
+            log.info(f"Writing SCI CDF file to {destination_dir}.")
             cdf_path = gdctb_cape_eea_factory.gdctb_cape_eea_data.save(
                 output_path=destination_dir, overwrite=True
             )
