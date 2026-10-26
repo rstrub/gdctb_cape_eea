@@ -6,7 +6,6 @@ from gdctb_cape_eea.io import read_file
 
 
 class StepperTable:
-
     def __init__(self, stepper_table: Path):
         if not stepper_table:
             raise ValueError(
@@ -137,8 +136,8 @@ def validate_stepper_table(stepper: "StepperTable") -> list:
     I'm just checking that the stepper table is in roughly the expected format:
     1. energies are > 0 and there are very few if any repeats
     2. declinations angles are < 90 and the repeat a lot. At least a lot more than energies.
-    
-    
+
+
 
     Parameters
     ----------

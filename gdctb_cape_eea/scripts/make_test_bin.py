@@ -38,19 +38,26 @@ if __name__ == "__main__":
         default=None,
         help="L0 time string YYYYDDD-HHMMSS to embed in the filename (default: current UTC time)",
     )
-    parser.add_argument("--version", type=int, default=0, help="File version number (default: 0)")
+    parser.add_argument(
+        "--version", type=int, default=0, help="File version number (default: 0)"
+    )
     parser.add_argument(
         "--packet-name",
         default="EEAtlmIntAccum",
         help="Packet 'name' to extract (default: EEAtlmIntAccum, the EEA science packet)",
     )
     parser.add_argument(
-        "--max-packets", type=int, default=None, help="Optional cap on number of packets to write"
+        "--max-packets",
+        type=int,
+        default=None,
+        help="Optional cap on number of packets to write",
     )
     args = parser.parse_args()
 
     time_str = args.time or datetime.now(UTC).strftime("%Y%j-%H%M%S")
-    output_filename = os.path.join(args.output_dir, make_l0_filename(time_str, args.version))
+    output_filename = os.path.join(
+        args.output_dir, make_l0_filename(time_str, args.version)
+    )
 
     n_packets = jsonl_to_bin(
         args.input_filename, output_filename, args.packet_name, args.max_packets

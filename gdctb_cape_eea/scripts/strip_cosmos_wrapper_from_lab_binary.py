@@ -31,7 +31,9 @@ def iter_raw_packets(data):
         has_id = (entry[0] >> 1) & 1
         has_extra = (entry[1] >> 7) & 1
         has_received_time = (entry[1] >> 6) & 1
-        body_end = len(entry) - 32 if has_id else len(entry)  # optional trailing SHA-256
+        body_end = (
+            len(entry) - 32 if has_id else len(entry)
+        )  # optional trailing SHA-256
 
         if entry_type == 2:  # packet declaration: target index (2) + name
             packet_names.append(entry[4:body_end].decode("ascii"))

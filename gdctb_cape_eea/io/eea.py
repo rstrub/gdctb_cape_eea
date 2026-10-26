@@ -26,15 +26,9 @@ class EEA:
         self.Logical_file_id = None
         self.Data_version = None
         # ener, defl
-        self.usec = (
-            []
-        )  # [ 41,  4 ] each of the 164 times, whenever gdctb_cape_eea_intgr_or_stepper == 1
-        self.PulseA = (
-            []
-        )  # [n_sweeps, MAX_STEPS] TOF channel A overflow counter (ACCUM bin 33)
-        self.PulseB = (
-            []
-        )  # [n_sweeps, MAX_STEPS] TOF channel B overflow counter (ACCUM bin 32)
+        self.usec = []  # [ 41,  4 ] each of the 164 times, whenever gdctb_cape_eea_intgr_or_stepper == 1
+        self.PulseA = []  # [n_sweeps, MAX_STEPS] TOF channel A overflow counter (ACCUM bin 33)
+        self.PulseB = []  # [n_sweeps, MAX_STEPS] TOF channel B overflow counter (ACCUM bin 32)
         self.Counter1 = []
         self.Counter2 = []
         self.ACCUM = []  # [41, 4, 32]. [ene, defl, accums]

@@ -46,8 +46,8 @@ HK_FIELD_OVERRIDES = {
     "T_FEE": {
         "catdesc": "EEA Front End Electronics Board temp",
         "unit": astropy_units.def_unit("deg_C"),
-        "scale": -0.025,   # Example slope coefficient
-        "offset": 107.5,   # Adjust based on calibration sheets to match ~20°C
+        "scale": -0.025,  # Example slope coefficient
+        "offset": 107.5,  # Adjust based on calibration sheets to match ~20°C
     },
     "V_3_3V": {"unit": astropy_units.V, "scale": 0.000144},
     "V_3_3I": {"unit": astropy_units.mA, "scale": 0.018},
@@ -56,7 +56,11 @@ HK_FIELD_OVERRIDES = {
     "V_NS_7V": {"unit": astropy_units.V, "scale": -0.000529},
     "V_11V": {"unit": astropy_units.V, "scale": 0.000551},
     "V_11": {"unit": astropy_units.mA, "scale": 0.049122},
-    "T_LVPS": {"unit": astropy_units.def_unit("deg_C"), "scale": -0.0025, "offset": 98.4},
+    "T_LVPS": {
+        "unit": astropy_units.def_unit("deg_C"),
+        "scale": -0.0025,
+        "offset": 98.4,
+    },
     "ANODE_V": {"unit": astropy_units.V, "scale": 0.0116},
     "ESA_BULK_V": {"unit": astropy_units.V, "scale": 0.0154},
     "DEF_BULK_V": {"unit": astropy_units.V, "scale": 0.0232},
@@ -93,7 +97,9 @@ def test_read_ccsdspy(small_level0_file):
     # HK and science packets use different fixed-length layouts.
     is_hk = apid in APIDS["HK"]
     packet_def_csv = (
-        "gdctb_cape-eea_hk_packet_def.csv" if is_hk else "gdctb_cape-eea_sci_packet_def.csv"
+        "gdctb_cape-eea_hk_packet_def.csv"
+        if is_hk
+        else "gdctb_cape-eea_sci_packet_def.csv"
     )
     pkt = ccsdspy.FixedLength.from_file(
         os.path.join(gdctb_cape_eea._data_directory, packet_def_csv)
@@ -106,7 +112,7 @@ def test_read_ccsdspy(small_level0_file):
         assert ratio < 0.2  # Expecting a lot of repetition in ANODE_V for HK packets
     else:
         assert len(result["ACCUM"]) > 0
-        assert len(result["ACCUM"][0]) == 34 
+        assert len(result["ACCUM"][0]) == 34
 
 
 def test_process_file(small_level0_file):
@@ -140,7 +146,6 @@ def verify_l1a(data_filename, output_l1a):
 
     assert os.path.getsize(output_l1a) > 275000
     with pycdf.CDF(str(output_l1a)) as cdf:
-
         # overall structure
         n_sweeps = len(cdf["Epoch"][:])
         length_time = (cdf["Epoch"][-1] - cdf["Epoch"][0]).total_seconds()
@@ -169,7 +174,9 @@ def verify_l1a(data_filename, output_l1a):
                 ]
 
         if SKYMAP_VAR not in variable_list:
-            log.info(f"No {SKYMAP_VAR} in {output_l1a}; skipping the counter check (expected for HK files)")
+            log.info(
+                f"No {SKYMAP_VAR} in {output_l1a}; skipping the counter check (expected for HK files)"
+            )
             verify_hk(cdf)
         else:
             passed_sweeps = []
@@ -179,7 +186,9 @@ def verify_l1a(data_filename, output_l1a):
                 counter_vals = cdf[COUNTER_VAR][i]
                 # sum both over the same steps: the ones the counter actually reported
                 valid = counter_vals != INTFILL
-                total = np.sum(np.where(skymap_vals == REAL4FILL, 0, skymap_vals)[valid])
+                total = np.sum(
+                    np.where(skymap_vals == REAL4FILL, 0, skymap_vals)[valid]
+                )
                 cntsum = np.sum(counter_vals[valid])
                 # The counter runs a little high relative to the 32 azimuth bins, and this is a whole
                 # sweep (not one packet), so allow 10%, with a small absolute floor for tiny totals.
@@ -272,14 +281,18 @@ def verify_hk(cdf):
             )
         elif field in CURRENT_MONITOR_FIELDS:
             full_scale_value = RAW_FULL_SCALE * scale
-            assert np.all(values >= -1.0), f"{field}: negative current reading is non-physical"
+            assert np.all(values >= -1.0), (
+                f"{field}: negative current reading is non-physical"
+            )
             assert values.max() < full_scale_value * 0.9, (
                 f"{field}: current reading near full-scale ({full_scale_value:.4g}), suggests "
                 "an overcurrent fault or bad calibration"
             )
         elif field in SWEEP_MONITOR_FIELDS:
             full_scale_value = RAW_FULL_SCALE * scale
-            assert np.all(values >= -1.0), f"{field}: negative sweep voltage is non-physical"
+            assert np.all(values >= -1.0), (
+                f"{field}: negative sweep voltage is non-physical"
+            )
             assert np.all(values <= full_scale_value * 1.01), (
                 f"{field}: calibrated value exceeds the monitor's full-scale range "
                 f"({full_scale_value:.4g})"

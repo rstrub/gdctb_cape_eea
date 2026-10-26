@@ -154,7 +154,10 @@ def process_file(data_filename: Path) -> list:
 
 
 def calibrate_file(
-    data_filename: Path, destination_dir, stepper: StepperTable = None, apid: int | None = None
+    data_filename: Path,
+    destination_dir,
+    stepper: StepperTable = None,
+    apid: int | None = None,
 ) -> Path:
     """
     Given an input data file, raise it to the next level
@@ -192,15 +195,15 @@ def calibrate_file(
 
         # call CCSDSPY to parse our packets.
         data = parse_l0_sci_packets(data_filename)
-        
-        # This is where most of the business logic for converting level 0 science data 
+
+        # This is where most of the business logic for converting level 0 science data
         # to level 1 happens.
         level1_filename = l0_sci_data_to_cdf(
             stepper, data, data_filename, destination_dir
         )
-        
+
         output_filename = level1_filename
-    
+
     elif apid in APIDS["HK"]:
         log.info(f"Processing HK file: {data_filename}.")
         data = parse_hk_packets(data_filename)
@@ -306,7 +309,9 @@ def _read_hk_field_catdesc() -> dict:
     gdctb_cape-eea_hk_packet_def.csv, so field descriptions stay in sync with the
     packet definition instead of being duplicated in code.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape-eea_hk_packet_def.csv")
+    csv_path = os.path.join(
+        gdctb_cape_eea._data_directory, "gdctb_cape-eea_hk_packet_def.csv"
+    )
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {row["name"].strip(): row["description"].strip() for row in reader}
@@ -319,7 +324,9 @@ def _read_hk_fill_field_names() -> set:
     back containing raw, unmasked bits from whatever neighboring field shares that byte.
     Their decoded values are meaningless and shouldn't be written out as measurements.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape-eea_hk_packet_def.csv")
+    csv_path = os.path.join(
+        gdctb_cape_eea._data_directory, "gdctb_cape-eea_hk_packet_def.csv"
+    )
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {
@@ -355,7 +362,9 @@ def l0_hk_data_to_cdf(
     iso_datetimes = Time([lib.tt2000_to_datetime(e) for e in epoch])
     hk_timeseries = TimeSeries(time=iso_datetimes)
 
-    bare_attrs = SWXData.global_attribute_template(gdctb_cape_eea.INST_NAME, "l1", "1.0.0")
+    bare_attrs = SWXData.global_attribute_template(
+        gdctb_cape_eea.INST_NAME, "l1", "1.0.0"
+    )
     # Distinguishes this from the sci L1 CDF in the output filename (Logical_file_id).
     bare_attrs["Instrument_mode"] = "hk"
     gdctb_cape_eea_hk_data = SWXData(timeseries=hk_timeseries, meta=bare_attrs)
@@ -430,7 +439,6 @@ def l0_sci_data_to_cdf(
         gdctb_cape_eea.stepper_table for now is defined in gdctb_cape_eea/gdctb_cape_eea/__init__.py
         """
 
-
         myEEA = EEA(file_metadata)
         # SkymapFactory, now as does FPI, also populates my EEA data model
         SkymapFactory(data, stepper, myEEA)
@@ -442,7 +450,6 @@ def l0_sci_data_to_cdf(
         # example_start_times = Time(
         #    [lib.tt2000_to_datetime(e) for e in myEEA.Epoch[0:10]]
         # )
-
 
         # https://swxsoc.readthedocs.io/en/latest/user-guide/reading_writing_data.html
         # https://swxsoc.readthedocs.io/en/latest/generated/api/swxsoc.swxdata.SWXData.html#swxsoc.swxdata.SWXData

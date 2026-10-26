@@ -66,7 +66,9 @@ def jsonl_to_bin(
     if (packet_name is None) == (apid is None):
         raise ValueError("Specify exactly one of packet_name or apid")
 
-    if hasattr(sys, "set_int_max_str_digits"):  # not available before Python 3.9.17/3.10.9
+    if hasattr(
+        sys, "set_int_max_str_digits"
+    ):  # not available before Python 3.9.17/3.10.9
         sys.set_int_max_str_digits(0)  # some "contents" fields are huge integers
 
     n_packets = 0
@@ -107,16 +109,25 @@ def jsonl_to_bin(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input_filename", help="Path to the JSONL telemetry log")
-    parser.add_argument("output_filename", help="Path to write the resulting binary file to")
+    parser.add_argument(
+        "output_filename", help="Path to write the resulting binary file to"
+    )
     selector = parser.add_mutually_exclusive_group()
     selector.add_argument(
         "--packet-name",
         default=None,
         help="Packet 'name' to extract (default: EEAtlmIntAccum, the EEA science packet, if --apid is not given)",
     )
-    selector.add_argument("--apid", type=int, help="CCSDS APID to extract instead of matching by packet name")
+    selector.add_argument(
+        "--apid",
+        type=int,
+        help="CCSDS APID to extract instead of matching by packet name",
+    )
     parser.add_argument(
-        "--max-packets", type=int, default=None, help="Optional cap on number of packets to write"
+        "--max-packets",
+        type=int,
+        default=None,
+        help="Optional cap on number of packets to write",
     )
     parser.add_argument(
         "--start-time",
@@ -152,4 +163,6 @@ if __name__ == "__main__":
         end_time,
         args.timestamps_out,
     )
-    print(f"Wrote {n_packets} packets (packet_name={packet_name!r}, apid={args.apid}) to {args.output_filename}")
+    print(
+        f"Wrote {n_packets} packets (packet_name={packet_name!r}, apid={args.apid}) to {args.output_filename}"
+    )

@@ -18,7 +18,9 @@ def _read_sci_field_catdesc() -> dict:
     gdctb_cape-eea_sci_packet_def.csv, so descriptions stay in sync with the packet
     definition instead of being duplicated in code.
     """
-    csv_path = os.path.join(gdctb_cape_eea._data_directory, "gdctb_cape-eea_sci_packet_def.csv")
+    csv_path = os.path.join(
+        gdctb_cape_eea._data_directory, "gdctb_cape-eea_sci_packet_def.csv"
+    )
     with open(csv_path, "r") as fp:
         reader = csv.DictReader(fp, skipinitialspace=True)
         return {row["name"].strip(): row["description"].strip() for row in reader}
@@ -65,7 +67,9 @@ class GDCTB_cape_EEA_Data_Processor:
         ts_1d_uQ = TimeSeries(time=iso_datetimes)
 
         self._gdctb_cape_eea_spectra()
-        bare_attrs = SWXData.global_attribute_template(gdctb_cape_eea.INST_NAME, "l1", "1.0.0")
+        bare_attrs = SWXData.global_attribute_template(
+            gdctb_cape_eea.INST_NAME, "l1", "1.0.0"
+        )
 
         self.gdctb_cape_eea_data = SWXData(
             timeseries=ts_1d_uQ,  # this is stats time series ....with no stats...
@@ -92,7 +96,9 @@ class GDCTB_cape_EEA_Data_Processor:
                         data=np.array(self.EEA.usec),
                         wcs=WCS(naxis=2),
                         meta={
-                            "CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_step_times"]
+                            "CATDESC": DERIVED_SPECTRA_CATDESC[
+                                "gdctb_cape_eea_step_times"
+                            ]
                         },
                         unit=astropy_units.s,
                     ),
@@ -155,7 +161,9 @@ class GDCTB_cape_EEA_Data_Processor:
                     NDCube(
                         data=np.array(self.EEA.PulseA),
                         wcs=WCS(naxis=2),
-                        meta={"CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_pulse_a"]},
+                        meta={
+                            "CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_pulse_a"]
+                        },
                         unit=astropy_units.dimensionless_unscaled,
                     ),
                 ),
@@ -164,7 +172,9 @@ class GDCTB_cape_EEA_Data_Processor:
                     NDCube(
                         data=np.array(self.EEA.PulseB),
                         wcs=WCS(naxis=2),
-                        meta={"CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_pulse_b"]},
+                        meta={
+                            "CATDESC": DERIVED_SPECTRA_CATDESC["gdctb_cape_eea_pulse_b"]
+                        },
                         unit=astropy_units.dimensionless_unscaled,
                     ),
                 ),

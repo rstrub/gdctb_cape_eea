@@ -28,7 +28,7 @@ import numpy as np
 from spacepy import pycdf
 
 
-def compute_variable_stats(cdf_path: str, variables: list | None = None ) -> dict:
+def compute_variable_stats(cdf_path: str, variables: list | None = None) -> dict:
     """
     Compute non-zero, non-fill statistics for each requested (or all numeric) variable in a CDF file.
 
@@ -48,11 +48,15 @@ def compute_variable_stats(cdf_path: str, variables: list | None = None ) -> dic
                 continue  # skip non-numeric (e.g. Epoch/time, string) and scalar variables
 
             fillval = var.attrs.get("FILLVAL")
-            valid_mask = np.ones(data.shape, dtype=bool) if fillval is None else data != fillval
+            valid_mask = (
+                np.ones(data.shape, dtype=bool) if fillval is None else data != fillval
+            )
 
             n_records = data.shape[0]
             per_record_valid_nonzero = (data != 0) & valid_mask
-            n_nonzero_records = int(np.any(per_record_valid_nonzero.reshape(n_records, -1), axis=1).sum())
+            n_nonzero_records = int(
+                np.any(per_record_valid_nonzero.reshape(n_records, -1), axis=1).sum()
+            )
 
             nonzero_values = data[per_record_valid_nonzero]
             n_nonzero_values = int(nonzero_values.size)
@@ -77,9 +81,22 @@ def compute_variable_stats(cdf_path: str, variables: list | None = None ) -> dic
 
 
 def print_stats(stats: dict) -> None:
-    name_width, n_records_width, nz_records_width, nz_values_width, stat_width = 25, 10, 11, 10, 12
+    name_width, n_records_width, nz_records_width, nz_values_width, stat_width = (
+        25,
+        10,
+        11,
+        10,
+        12,
+    )
     n_gaps = 7  # spaces between the 8 columns
-    fixed_width = name_width + n_records_width + nz_records_width + nz_values_width + 3 * stat_width + n_gaps
+    fixed_width = (
+        name_width
+        + n_records_width
+        + nz_records_width
+        + nz_values_width
+        + 3 * stat_width
+        + n_gaps
+    )
     # size CATDESC to whatever's left of the actual terminal width, so the row never
     # overflows and gets corrupted by the terminal's own soft-wrap on copy/paste
     terminal_width = shutil.get_terminal_size(fallback=(120, 24)).columns
@@ -109,10 +126,14 @@ def print_stats(stats: dict) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("cdf_path", help="Path to the CDF file")
     parser.add_argument(
-        "--variable", action="append", help="CDF variable name to include (repeatable); default is all variables"
+        "--variable",
+        action="append",
+        help="CDF variable name to include (repeatable); default is all variables",
     )
     parser.add_argument("--csv", help="Optional path to also write the stats as CSV")
     args = parser.parse_args()
@@ -124,8 +145,17 @@ if __name__ == "__main__":
         with open(args.csv, "w", newline="") as fh:
             writer = csv.DictWriter(
                 fh,
-                fieldnames=["variable", "catdesc", "units", "n_records", "n_nonzero_records", "n_nonzero_values",
-                            "avg_nonzero", "max_nonzero", "min_nonzero"],
+                fieldnames=[
+                    "variable",
+                    "catdesc",
+                    "units",
+                    "n_records",
+                    "n_nonzero_records",
+                    "n_nonzero_values",
+                    "avg_nonzero",
+                    "max_nonzero",
+                    "min_nonzero",
+                ],
             )
             writer.writeheader()
             for name, s in results.items():
