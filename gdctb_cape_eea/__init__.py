@@ -14,9 +14,7 @@ from swxsoc import print_config
 
 # Force the mission environment variable and reconfigure regardless of import order
 os.environ["SWXSOC_MISSION"] = "gdctb"
-reconfigure = getattr(swxsoc, "reconfigure", None) 
-# Load the config.yml
-reconfigure()
+swxsoc.reconfigure()
 
 # Load user configuration
 config = swxsoc.config
@@ -33,7 +31,7 @@ _calibration_directory = _data_directory / "calibration"
 
 log.debug(f"gdctb_cape_eea version: {__version__}")
 
-INSTRUMENT_NAME = "cape-eea" # A valid SWXSOC instrument name.  It's defined in the gdctb mission section of swxsoc's data/config.yml
+INSTRUMENT_NAME = "cape-eea"  # A valid SWXSOC instrument name.  It's defined in the gdctb mission section of swxsoc's data/config.yml
 
 INST_NAME = INSTRUMENT_NAME
 # Must use a hyphen, not an underscore: swxsoc's create_science_filename()/parse_science_filename()
