@@ -13,7 +13,12 @@ from spacepy import pycdf
 
 import gdctb_cape_eea
 import gdctb_cape_eea.calibration as calib
-from gdctb_cape_eea import _calibration_directory, _data_directory, _test_files_directory, log
+from gdctb_cape_eea import (
+    _calibration_directory,
+    _data_directory,
+    _test_files_directory,
+    log,
+)
 from gdctb_cape_eea.calibration.calibration import (
     APIDS,
     CURRENT_STEPPER_TABLE_FILE,
