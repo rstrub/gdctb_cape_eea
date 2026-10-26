@@ -13,7 +13,7 @@ from spacepy import pycdf
 
 import gdctb_cape_eea
 import gdctb_cape_eea.calibration as calib
-from gdctb_cape_eea import _calibration_directory, _data_directory, log
+from gdctb_cape_eea import _calibration_directory, _data_directory, _test_files_directory, log
 from gdctb_cape_eea.calibration.calibration import (
     APIDS,
     CURRENT_STEPPER_TABLE_FILE,
@@ -76,7 +76,7 @@ def small_level0_file(request):
     if "txt" in request.param or "csv" in request.param:
         return Path(os.path.join(_calibration_directory, request.param))
     else:
-        return Path(os.path.join(_data_directory, request.param))
+        return Path(os.path.join(_test_files_directory, request.param))
 
 
 def test_read_ccsdspy(small_level0_file):
