@@ -10,9 +10,7 @@ on:
       - main
 jobs:
   build:
-    #
     runs-on: ${{ matrix.platform }}
-    #
     strategy:
       fail-fast: false
       matrix:
@@ -21,23 +19,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      #
     - name: Set up Python ${{ matrix.python-version }}
-      #
       uses: actions/setup-python@v5
       with:
-        #
         python-version: ${{ matrix.python-version }}
-        #
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install -e .[test]
     - name: Run tests
-      run: pytest --pyargs gdctb_cape_eea --cov gdctb_cape_eea
+      run: pytest gdctb_cape_eea docs --cov gdctb_cape_eea
       env:
-        #
         PLATFORM: ${{ matrix.platform }}
-        #
     - name: Upload coverage reports to Codecov with GitHub Action
       uses: codecov/codecov-action@v3
