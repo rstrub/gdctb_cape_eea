@@ -2,7 +2,7 @@
     "Records":[
        {
           "Sns":{
-             "Message":"{\n\"Records\": [\n{\n\"eventSource\": \"aws:s3\",\n\"awsRegion\": \"us-east-1\",\n\"eventTime\": \"2026-08-25T09:35:08.284Z\",\n\"eventName\": \"ObjectCreated:Put\",\n\"s3\": {\n\"bucket\": {\n\"name\": \"gdctb=cape-eea\"\n},\n\"object\": {\n\"key\": \"GDCTB_EEA_l0_2023042-000000_v0.bin\",\n\"size\": 219672,\n\"eTag\": \"c1f165f22d8d4190323894a4df26cda4\",\n\"sequencer\": \"0062DE63CC330B223E\"\n}\n}\n}\n]\n}",
+             "Message":"{\n\"Records\": [\n{\n\"eventSource\": \"aws:s3\",\n\"awsRegion\": \"us-east-1\",\n\"eventTime\": \"2026-08-25T09:35:08.284Z\",\n\"eventName\": \"ObjectCreated:Put\",\n\"s3\": {\n\"bucket\": {\n\"name\": \"gdctb-cape-eea\"\n},\n\"object\": {\n\"key\": \"gdctb_cape-eea_l0_2026161-132236_v0.bin\",\n\"size\": 219672,\n\"eTag\": \"c1f165f22d8d4190323894a4df26cda4\",\n\"sequencer\": \"0062DE63CC330B223E\"\n}\n}\n}\n]\n}",
              "MessageAttributes":{
                 "Test":{
                    "Type":"String",
