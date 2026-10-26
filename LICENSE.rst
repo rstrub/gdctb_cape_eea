@@ -1,1 +1,1 @@
-See license/LICENSE.rst
+See licenses/LICENSE.rst
