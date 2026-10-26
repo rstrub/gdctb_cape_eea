@@ -132,7 +132,7 @@ jobs:
       run: echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
     
     - name: Comment PR
-      if: steps.test-lambda.outputs.test_success == 'true' && github.event_name == 'pull_request_target'
+      if: steps.test-lambda.outputs.test_success == 'true' && github.event_name == 'pull_request'
       uses: andyghc/actions-comment-pull-request@v3
       with:
         message: |
