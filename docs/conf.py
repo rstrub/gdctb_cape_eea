@@ -107,8 +107,8 @@ html_theme = "pydata_sphinx_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-# html_logo = "logo/cape_eea_logo.png"
-# html_favicon = "logo/favicon.ico"
+html_logo = "logo/gdctb_logo.png"
+html_favicon = "logo/favicon.ico"
 # html_css_files = [
 #    "css/custom.css",
 # ]
