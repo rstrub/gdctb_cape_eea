@@ -182,7 +182,8 @@ Temporary Items
 .apdisk
 
 _version.py
-/.vscode/launch.json
+.vscode/launch.json
+.vscode/settings.json
 
 # Runtime "database" stub written by gdctb_cape_eea.calibration.calibration.store_boot_packet;
 # seeded with a default value for tests in conftest.py, not tracked.
