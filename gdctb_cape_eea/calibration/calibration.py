@@ -25,7 +25,13 @@ from gdctb_cape_eea.calibration.build_spectra import GDCTB_cape_EEA_Data_Process
 from gdctb_cape_eea.calibration.skymapfactory import SkymapFactory
 from gdctb_cape_eea.io import read_file
 from gdctb_cape_eea.io.eea import EEA
-from gdctb_cape_eea.Stepper.StepperTable import StepperTable
+from gdctb_cape_eea.Stepper.StepperTable import (
+    CURRENT_STEPPER_TABLE_FILE,
+    StepperTable,
+    get_stepper_table_for_file,
+    is_ascii_file,
+    store_boot_packet,
+)
 from gdctb_cape_eea.util.time import ccsds_to_cdf_time
 
 __all__ = [
@@ -44,8 +50,6 @@ APIDS = {
     "BOOT": [266]
 }
 
-CURRENT_STEPPER_TABLE_FILE = Path("boot_packet.txt")
-
 
 def _peek_apid(data_filename: Path) -> int:
     """Read the CCSDS APID out of the first packet's primary header (its first 2
@@ -59,14 +63,6 @@ def _peek_apid(data_filename: Path) -> int:
         )
     first_word = struct.unpack(">H", header)[0]
     return first_word & 0x07FF
-
-
-def get_stepper_table_for_file(data_filename) -> "StepperTable":
-    """Build the StepperTable last selected by a boot/config packet, as recorded in
-    CURRENT_STEPPER_TABLE_FILE, rather than looking it up by data_filename.
-    """
-    stepper_table_name = CURRENT_STEPPER_TABLE_FILE.read_text().strip()
-    return StepperTable(stepper_table_name)
 
 
 def get_apid_for_file(data_filename) -> int:
@@ -534,23 +530,6 @@ def is_binary_file(file_path, block_size=1024):
         return False
 
 
-def is_ascii_file(file_path, block_size=1024):
-    """Returns True if the file contains only valid 7-bit ASCII characters."""
-    try:
-        with open(file_path, "rb") as f:
-            block = f.read(block_size)
-
-            # A null byte means it is a binary file, not ASCII text
-            if b"\x00" in block:
-                return False
-
-            # ASCII characters only use byte values from 0 to 127
-            return not any(byte > 127 for byte in block)
-    except OSError:
-        print(f"Error: Could not read file {file_path}")
-        return False
-
-
 def is_boot_packet(file_path):
     """Returns True if the file is a boot packet (ASCII text), False otherwise."""
     if is_ascii_file(file_path):
@@ -560,11 +539,3 @@ def is_boot_packet(file_path):
         return True
     else:
         return False
-    
-
-def store_boot_packet(file_path):
-    """Stores the boot packet info in DATABASE for later use.
-    currently stubbed to write the name of the current stepper to
-    a file called boot_packet.txt"""
-
-    CURRENT_STEPPER_TABLE_FILE.write_text(file_path.name)

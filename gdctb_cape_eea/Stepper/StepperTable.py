@@ -1,8 +1,20 @@
 import os
 from pathlib import Path
 
+import ccsdspy
+
 import gdctb_cape_eea
 from gdctb_cape_eea.io import read_file
+
+# Stub "database": boot packet BTABSEL value -> stepper table file name
+# THIS IS OUR DATABASE.
+CURRENT_STEPPER_TABLE_FILE = Path("boot_packet.txt")
+# THE BOOT PACKET CAN ONLY REFER TO A PARTICULAR STEPPER TABLE by BTABSEL[0], BTABSEL[1], etc.
+STEPPER_TABLE_FOR_BTABSEL = {
+    0: "ptb_esastepped_undeflected_stepper.txt",
+    1: "flight_stepper.txt",
+    2: "ptb_esastepped_deflected_stepper.txt",
+}
 
 
 class StepperTable:
@@ -197,3 +209,64 @@ def validate_stepper_table(stepper: "StepperTable") -> list:
         )
 
     return issues
+
+
+def get_stepper_table_for_file(data_filename) -> "StepperTable":
+    """Build the StepperTable last selected by a boot/config packet, as recorded in
+    CURRENT_STEPPER_TABLE_FILE, rather than looking it up by data_filename.
+    """
+    stepper_table_name = CURRENT_STEPPER_TABLE_FILE.read_text().strip()
+    return StepperTable(stepper_table_name)
+
+
+def get_stepper_table_name_for_btabsel(btabsel: int) -> str:
+    """Look up the stepper table file name selected by a boot packet BTABSEL value."""
+    try:
+        return STEPPER_TABLE_FOR_BTABSEL[int(btabsel)]
+    except KeyError:
+        raise ValueError(
+            f"No stepper table is defined for BTABSEL={btabsel}; "
+            f"expected one of {sorted(STEPPER_TABLE_FOR_BTABSEL)}."
+        ) from None
+
+
+def read_btabsel(file_path) -> int:
+    """Read BTABSEL from the last packet of a binary boot packet file."""
+    pkt = ccsdspy.FixedLength.from_file(
+        os.path.join(
+            gdctb_cape_eea._data_directory, "gdctb_cape-eea_boot_packet_def.csv"
+        )
+    )
+    result = pkt.load(file_path)
+    return int(result["BTABSEL"][-1])
+
+
+def is_ascii_file(file_path, block_size=1024):
+    """Returns True if the file contains only valid 7-bit ASCII characters."""
+    try:
+        with open(file_path, "rb") as f:
+            block = f.read(block_size)
+
+            # A null byte means it is a binary file, not ASCII text
+            if b"\x00" in block:
+                return False
+
+            # ASCII characters only use byte values from 0 to 127
+            return not any(byte > 127 for byte in block)
+    except OSError:
+        print(f"Error: Could not read file {file_path}")
+        return False
+
+
+def store_boot_packet(file_path):
+    """Stores the boot packet info in DATABASE for later use.
+    Currently stubbed to write the name of the stepper table selected by the
+    boot packet's BTABSEL to a file called boot_packet.txt.
+    ASCII boot files already contain the stepper table name as their file name."""
+
+    file_path = Path(file_path)
+    if is_ascii_file(file_path):
+        stepper_table_name = file_path.name
+    else:
+        stepper_table_name = get_stepper_table_name_for_btabsel(read_btabsel(file_path))
+    CURRENT_STEPPER_TABLE_FILE.write_text(stepper_table_name)

@@ -21,13 +21,17 @@ from gdctb_cape_eea import (
 )
 from gdctb_cape_eea.calibration.calibration import (
     APIDS,
-    CURRENT_STEPPER_TABLE_FILE,
     get_apid_for_file,
-    get_stepper_table_for_file,
     is_boot_packet,
 )
 from gdctb_cape_eea.io import read_ccsds
-from gdctb_cape_eea.Stepper.StepperTable import get_unique_list
+from gdctb_cape_eea.Stepper.StepperTable import (
+    CURRENT_STEPPER_TABLE_FILE,
+    get_stepper_table_for_file,
+    get_stepper_table_name_for_btabsel,
+    get_unique_list,
+    store_boot_packet,
+)
 from gdctb_cape_eea.tests.conftest import TEST_PROCESSING
 
 # boot_packet.txt entries in TEST_PROCESSING contain just the stepper table filename to use for
@@ -324,3 +328,35 @@ def cleanup_retry(directory):
         shutil.rmtree(directory)
     except PermissionError as e:
         print(f"Failed to clean up directory {directory} due to PermissionError: {e}")
+
+
+@pytest.mark.parametrize(
+    "boot_file, expected_table",
+    [
+        (
+            "20261014040843395730000__has_only_boot_packet.bin",
+            "ptb_esastepped_undeflected_stepper.txt",
+        ),
+        (
+            "20261014040843395730000__has_only_boot_packet_btabsel_1.bin",
+            "flight_stepper.txt",
+        ),
+        (
+            "20261014040843395730000__has_only_boot_packet_btabsel_2.bin",
+            "ptb_esastepped_deflected_stepper.txt",
+        ),
+    ],
+)
+def test_store_boot_packet_selects_stepper_table(boot_file, expected_table):
+    original = CURRENT_STEPPER_TABLE_FILE.read_text()
+    try:
+        store_boot_packet(Path(_test_files_directory, boot_file))
+        assert CURRENT_STEPPER_TABLE_FILE.read_text() == expected_table
+        get_stepper_table_for_file(CURRENT_STEPPER_TABLE_FILE)  # table must load
+    finally:
+        CURRENT_STEPPER_TABLE_FILE.write_text(original)
+
+
+def test_unmapped_btabsel_raises():
+    with pytest.raises(ValueError):
+        get_stepper_table_name_for_btabsel(3)
