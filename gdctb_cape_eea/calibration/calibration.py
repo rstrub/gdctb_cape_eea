@@ -41,6 +41,7 @@ __all__ = [
 APIDS = {
     "HK": [265],
     "SCIENCE": [260],
+    "BOOT": [266]
 }
 
 CURRENT_STEPPER_TABLE_FILE = Path("boot_packet.txt")
@@ -552,8 +553,14 @@ def is_ascii_file(file_path, block_size=1024):
 
 def is_boot_packet(file_path):
     """Returns True if the file is a boot packet (ASCII text), False otherwise."""
-    return is_ascii_file(file_path)
-
+    if is_ascii_file(file_path):
+        return True # we have both ascii and binary boot packets
+    apid = get_apid_for_file(file_path)
+    if apid == 266:
+        return True
+    else:
+        return False
+    
 
 def store_boot_packet(file_path):
     """Stores the boot packet info in DATABASE for later use.

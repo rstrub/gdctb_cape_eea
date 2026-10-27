@@ -3,6 +3,7 @@ import pytest
 from gdctb_cape_eea.calibration.calibration import CURRENT_STEPPER_TABLE_FILE
 
 TEST_PROCESSING = [
+    "20261014040843395730000__has_only_boot_packet.bin",
     "gdctb_cape-eea_l0_20261015-234049_v0.bin",
     "ptb_esastepped_undeflected_stepper.txt",
     "gdctb_cape-eea_l0_2026161-142204_v0.bin",
