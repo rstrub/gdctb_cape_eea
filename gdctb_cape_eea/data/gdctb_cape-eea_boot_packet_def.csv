@@ -1,0 +1,10 @@
+name, data_type, bit_length, description
+SHCOARSE, uint, 32, CCSDS Packet 2nd Header Coarse Time
+SHFINE, uint, 20, CCSDS Packet 2nd Header Fine Time
+SHFILL, fill, 4, CCSDS Packet 2nd Header Fill
+SHEID, uint, 8, CCSDS Packet 2nd Header Extended ID
+BSUM, uint, 4, Boot summary status
+BOPT, uint, 1, Boot options
+BTABSEL, uint, 3, Stepper Table Selection
+SPARE1, fill, 88, Spare1
+CKSUM16, uint, 16, Checksum

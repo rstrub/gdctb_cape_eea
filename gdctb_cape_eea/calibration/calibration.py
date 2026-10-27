@@ -182,7 +182,7 @@ def calibrate_file(
     if (
         file_metadata["instrument"] == gdctb_cape_eea.INST_NAME
         and apid in APIDS["SCIENCE"]
-        and file_metadata["level"] == "l0"
+        and file_metadata["level"] in ("l0", "raw")  # "raw": APID-named files, e.g. _260_
     ):
         if stepper is None:
             # Note. To date a boot packet file will not make it here

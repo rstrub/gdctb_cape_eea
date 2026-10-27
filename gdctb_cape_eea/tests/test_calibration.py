@@ -334,15 +334,15 @@ def cleanup_retry(directory):
     "boot_file, expected_table",
     [
         (
-            "20261014040843395730000__has_only_boot_packet.bin",
+            "20261014040843395730000_boot.bin",
             "ptb_esastepped_undeflected_stepper.txt",
         ),
         (
-            "20261014040843395730000__has_only_boot_packet_btabsel_1.bin",
+            "20261014040843395730000_boot_btabsel_1.bin",
             "flight_stepper.txt",
         ),
         (
-            "20261014040843395730000__has_only_boot_packet_btabsel_2.bin",
+            "20261014040843395730000_boot_btabsel_2.bin",
             "ptb_esastepped_deflected_stepper.txt",
         ),
     ],
