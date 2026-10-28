@@ -10,7 +10,8 @@ TEST_PROCESSING = [
     "gdctb_cape-eea_260_2026161-132236_v0.bin",
 
     "20261014040843395730000_boot_btabsel_1.bin",
-
+     "gdctb_cape-eea_260_2026161-132236_v0.bin",
+     
     "gdctb_cape-eea_265_2026161-132237_v0.bin",
     "gdctb_cape-eea_265_2026023-000000_v0.bin",
 ]

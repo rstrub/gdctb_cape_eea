@@ -1,3 +1,6 @@
+from dataclasses import dataclass, field
+from typing import Any
+
 N_AZIMUTH = 32  # number of real sky-map azimuth bins
 # The raw ACCUM packet field has 34 channels total (see hermes, now gdctb_cape-eea_sci_packet_def.csv).
 # Confirmed against the EEA C&DH firmware (GitLab hermes-eea/eea-cdh, eea.vhd/eea_ctrl.vhd):
@@ -14,27 +17,28 @@ EPOCHTIMEFILL = -9223372036854775808
 INTFILL = 65535
 
 
+@dataclass
 class EEA:
     """
     holds the data after Skymap creation and before CDF file population
     """
 
-    def __init__(self, conf):
-        self.Epoch = []  # the first of each sweep, the first of each of the 164 times,
-        #                 when gdctb_cape_eea_intgr_or_stepper = 1 and  gdctb_cape_eea_step_counter = 0
-        self.Generation_date = None
-        self.Logical_file_id = None
-        self.Data_version = None
-        # ener, defl
-        self.usec = []  # [ 41,  4 ] each of the 164 times, whenever gdctb_cape_eea_intgr_or_stepper == 1
-        self.PulseA = []  # [n_sweeps, MAX_STEPS] TOF channel A overflow counter (ACCUM bin 33)
-        self.PulseB = []  # [n_sweeps, MAX_STEPS] TOF channel B overflow counter (ACCUM bin 32)
-        self.Counter1 = []
-        self.Counter2 = []
-        self.ACCUM = []  # [41, 4, 32]. [ene, defl, accums]
-        self.SunAngles = []  # [4,32] really just metadata
-        self.EnergyLabels = []  # [41] really just metadata
-        # self.stats = []  # [41] really just metadata
+    # the first of each sweep, the first of each of the 164 times,
+    # when gdctb_cape_eea_intgr_or_stepper = 1 and  gdctb_cape_eea_step_counter = 0
+    Epoch: list = field(default_factory=list)
+    Generation_date: Any = None
+    Logical_file_id: Any = None
+    Data_version: Any = None
+    # ener, defl
+    usec: list = field(default_factory=list)   # [ 41,  4 ] each of the 164 times, whenever gdctb_cape_eea_intgr_or_stepper == 1
+    PulseA: list = field(default_factory=list) # [n_sweeps, MAX_STEPS] TOF channel A overflow counter (ACCUM bin 33)
+    PulseB: list = field(default_factory=list) # [n_sweeps, MAX_STEPS] TOF channel B overflow counter (ACCUM bin 32)
+    Counter1: list = field(default_factory=list)
+    Counter2: list = field(default_factory=list)
+    ACCUM: list = field(default_factory=list)         # [41, 4, 32]. [ene, defl, accums]
+    SunAngles: list = field(default_factory=list)     # [4,32] really just metadata
+    EnergyLabels: list = field(default_factory=list)  # [41] really just metadata
+    # stats: list = field(default_factory=list)       # [41] really just metadata
 
     def append(self, attrname, record):
         try:

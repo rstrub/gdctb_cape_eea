@@ -437,7 +437,7 @@ def l0_sci_data_to_cdf(
         gdctb_cape_eea.stepper_table for now is defined in gdctb_cape_eea/gdctb_cape_eea/__init__.py
         """
 
-        myEEA = EEA(file_metadata)
+        myEEA = EEA()
         # SkymapFactory, now as does FPI, also populates my EEA data model
         SkymapFactory(data, stepper, myEEA)
 
@@ -535,7 +535,4 @@ def is_boot_packet(file_path):
     if is_ascii_file(file_path):
         return True # we have both ascii and binary boot packets
     apid = get_apid_for_file(file_path)
-    if apid == 266:
-        return True
-    else:
-        return False
+    return apid == 266
