@@ -429,8 +429,8 @@ def l0_sci_data_to_cdf(
     >>> cdf_filename = calib.l0_sci_data_to_cdf(data_packets, data_filename)  # doctest: +SKIP
     """
 
-    # this is transferring name.bin to name.cdf
-    file_metadata = parse_science_filename(original_filename.name)
+    # this used to get passed to EEA
+    # file_metadata = parse_science_filename(original_filename.name)
 
     if data:
         """
