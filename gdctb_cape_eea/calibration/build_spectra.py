@@ -30,7 +30,7 @@ def _read_sci_field_catdesc() -> dict:
 # rather than decoded directly from a packet field, so they have no row in
 # gdctb_cape-eea_sci_packet_def.csv or the stepper table files.
 DERIVED_SPECTRA_CATDESC = {
-    "gdctb_cape_eea_step_times": "Raw Per-Step Packet Time",
+    "gdctb_cape_eea_step_times": "Time of each step in seconds since the sweep's Epoch",
     "gdctb_cape_eea_energy_profile": "Energy Profile",
     "gdctb_cape_eea_deflection_angles": "Deflection Angles",
     "gdctb_cape_eea_pulse_a": "TOF Channel A Overflow Counter (raw ACCUM bin 33)",
@@ -93,7 +93,7 @@ class GDCTB_cape_EEA_Data_Processor:
                 (
                     "gdctb_cape_eea_step_times",
                     NDCube(
-                        data=np.array(self.EEA.usec),
+                        data=np.array(self.EEA.step_times),
                         wcs=WCS(naxis=2),
                         meta={
                             "CATDESC": DERIVED_SPECTRA_CATDESC[

@@ -2,7 +2,6 @@ import numpy as np
 
 from gdctb_cape_eea import log
 from gdctb_cape_eea.io.eea import (
-    EPOCHTIMEFILL,
     INTFILL,
     MAX_STEPS,
     N_AZIMUTH,
@@ -89,8 +88,9 @@ def SkymapFactory(l0_cdf, stepper, myEEA):
 
     # Now let's populate one sweep at a time and eventually the whole file
     package = []
-    # ccsds coarse+fine -> cdf-epoch times.
-    for ptr in range(len(beginning_packets)):
+
+    n_sweeps = len(beginning_packets)
+    for ptr in range(n_sweeps):
         start_idx = beginning_packets[ptr]
         finish_idx = (
             beginning_packets[ptr + 1]
@@ -169,7 +169,7 @@ def do_eea_sweep(
                           already split from ACCUM in skymap_factory()
     cnt1                - the sum of this sweep's accum
     cnt2                - same as above but +1...not clear yet
-    epoch               - CDF Formatted time for every single measurement, [0] is the time for the sweep/packet
+    epoch               - CDF Formatted time (TT2000 ns) for every single measurement, [0] is the time for the sweep/packet
     energy_vals         - this sweep's energy profile, already looked up from the stepper table in skymap_factory()
     deflection_vals     - this sweep's deflection-angle profile, already looked up from the stepper table in skymap_factory()
     ith_FSmap           - sweep counter
@@ -178,7 +178,7 @@ def do_eea_sweep(
     -------
     return_package : dict
         This sweep's values, each padded/fill-stuffed out to MAX_STEPS, keyed by
-        "Epoch", "usec", "counts", "pulse_a", "pulse_b", "energies", "deflections",
+        "Epoch", "step_times", "counts", "pulse_a", "pulse_b", "energies", "deflections",
         "counter1", "counter2".
     """
     return_package = {}
@@ -187,9 +187,12 @@ def do_eea_sweep(
         0
     ]  # here the "Epoch" is the traditional one: the start time of each sweep
 
-    # Fills this key with all of the Epoch times in the sweep for  (depends on the stepper table length,
-    # (so far 63 and 164) and fills out to 256 with fill values
-    return_package["usec"] = stuff_stepsize(epoch, (MAX_STEPS), EPOCHTIMEFILL)
+    # Each step's time as seconds since this sweep's Epoch (the first packet), padded out to 256
+    # with fill values. epoch is uint64 TT2000 nanoseconds, so go through int64 before subtracting.
+    epoch_ns = epoch.astype(np.int64)
+    return_package["step_times"] = stuff_stepsize(
+        (epoch_ns - epoch_ns[0]) / 1e9, (MAX_STEPS), REAL4FILL
+    )
 
     # counts has already been sliced to the 32 real azimuth bins in skymap_factory();
     # here we just gather it into a fixed MAX_STEPS x N_AZIMUTH array

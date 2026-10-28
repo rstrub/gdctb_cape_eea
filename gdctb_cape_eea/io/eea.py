@@ -30,7 +30,7 @@ class EEA:
     Logical_file_id: Any = None
     Data_version: Any = None
     # ener, defl
-    usec: list = field(default_factory=list)   # [ 41,  4 ] each of the 164 times, whenever gdctb_cape_eea_intgr_or_stepper == 1
+    step_times: list = field(default_factory=list)  # [n_sweeps, MAX_STEPS] seconds since each sweep's Epoch
     PulseA: list = field(default_factory=list) # [n_sweeps, MAX_STEPS] TOF channel A overflow counter (ACCUM bin 33)
     PulseB: list = field(default_factory=list) # [n_sweeps, MAX_STEPS] TOF channel B overflow counter (ACCUM bin 32)
     Counter1: list = field(default_factory=list)
@@ -48,10 +48,10 @@ class EEA:
             if self.name_align(attrname) in self.default_obj:
                 return self.default_obj[self.name_align(attrname)]
 
-    def populate(self, skymap):
-        for record in skymap:
+    def populate(self, sweeps: list[dict[str, Any]]):  # EEA sweep ~ FPI skymap EEA_sweep time is n_steps * .006 secs
+        for record in sweeps:
             self.Epoch.append(record["Epoch"])
-            self.usec.append(self.append("usec", record))
+            self.step_times.append(self.append("step_times", record))
             self.ACCUM.append(self.append("counts", record))
             self.PulseA.append(self.append("pulse_a", record))
             self.PulseB.append(self.append("pulse_b", record))
