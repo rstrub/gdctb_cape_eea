@@ -355,7 +355,7 @@ def l0_hk_data_to_cdf(
         Fully specificied filename of cdf file
     """
 
-    epoch = ccsds_to_cdf_time.help_convert_eaa(data)
+    epoch = ccsds_to_cdf_time.convert_ccsds_times_to_cdf(data)
     iso_datetimes = Time([lib.tt2000_to_datetime(e) for e in epoch])
     hk_timeseries = TimeSeries(time=iso_datetimes)
 

@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import ccsdspy
+import numpy as np
 
 import gdctb_cape_eea
 from gdctb_cape_eea.io import read_file
@@ -33,8 +34,8 @@ class StepperTable:
                 f"Stepper table {stepper_table!r} failed validation:\n"
                 + "\n".join(f"- {issue}" for issue in issues)
             )
-        self.n_defl = len(get_unique_list(self.deflections))
-        self.n_energies = len(get_unique_list(self.energies))
+        self.n_defl = np.unique(self.deflections).size
+        self.n_energies = np.unique(self.energies).size
 
         self.v_defl = [-16.875, -5.625, 5.625, 16.875]
 
@@ -87,16 +88,18 @@ class StepperTable:
         Parse the stepper table file and populate the energies and deflections lists.
         """
         lines = read_file(os.path.join(self.stepper_table_file))
-        self.energies = []
-        self.deflections = []
+        energies = []
+        deflections = []
         for line in lines:
             if "#" not in line:
                 try:
                     [energy, deflection] = line.split(",")
-                    self.energies.append(float(energy))
-                    self.deflections.append(float(deflection))
+                    energies.append(float(energy))
+                    deflections.append(float(deflection))
                 except ValueError:
                     continue
+        self.energies = np.array(energies, dtype=float)
+        self.deflections = np.array(deflections, dtype=float)
 
     def parse_old_stepper_table(self):
         """
@@ -118,11 +121,8 @@ class StepperTable:
         """
 
         lines = read_file(os.path.join(self.stepper_table_file))
-        self.energies = []
-        self.deflections = []
-        for line in lines:
-            self.energies.append(int(line[8:10], 16))
-            self.deflections.append(int(line[10:12], 16))
+        self.energies = np.array([int(line[8:10], 16) for line in lines])
+        self.deflections = np.array([int(line[10:12], 16) for line in lines])
 
 
 def get_unique_list(arr):
@@ -164,47 +164,48 @@ def validate_stepper_table(stepper: "StepperTable") -> list:
     """
     issues = []
 
-    energies = stepper.energies
-    deflections = stepper.deflections
+    # asarray so a list assigned to stepper.energies/deflections still validates
+    energies = np.asarray(stepper.energies, dtype=float)
+    deflections = np.asarray(stepper.deflections, dtype=float)
 
-    if not energies or not deflections:
+    if energies.size == 0 or deflections.size == 0:
         issues.append("Stepper table has no parsed energy/deflection rows.")
         return issues
 
-    if len(energies) != len(deflections):
+    if energies.size != deflections.size:
         issues.append(
-            f"energies ({len(energies)}) and deflections ({len(deflections)}) "
+            f"energies ({energies.size}) and deflections ({deflections.size}) "
             "have different lengths; the file may be malformed."
         )
 
     # Range checks
-    bad_deflections = [d for d in deflections if abs(d) > MAX_DEFLECTION_DEG]
-    if bad_deflections:
+    bad_deflections = deflections[np.abs(deflections) > MAX_DEFLECTION_DEG]
+    if bad_deflections.size:
         issues.append(
-            f"{len(bad_deflections)} deflection value(s) exceed "
-            f"+/-{MAX_DEFLECTION_DEG} deg (e.g. {bad_deflections[:5]}); "
+            f"{bad_deflections.size} deflection value(s) exceed "
+            f"+/-{MAX_DEFLECTION_DEG} deg (e.g. {bad_deflections[:5].tolist()}); "
             "the energy/deflection columns may be swapped."
         )
 
-    non_positive_energies = [e for e in energies if e <= 0]
-    if non_positive_energies:
+    non_positive_energies = energies[energies <= 0]
+    if non_positive_energies.size:
         issues.append(
-            f"{len(non_positive_energies)} energy value(s) are <= 0 eV "
-            f"(e.g. {non_positive_energies[:5]}); energies must be positive."
+            f"{non_positive_energies.size} energy value(s) are <= 0 eV "
+            f"(e.g. {non_positive_energies[:5].tolist()}); energies must be positive."
         )
 
     # Repetition check: deflection should repeat a lot more than energy does.
-    n_unique_energies = len(get_unique_list(energies))
-    n_unique_deflections = len(get_unique_list(deflections))
-    energy_unique_ratio = n_unique_energies / len(energies)
-    deflection_unique_ratio = n_unique_deflections / len(deflections)
+    n_unique_energies = np.unique(energies).size
+    n_unique_deflections = np.unique(deflections).size
+    energy_unique_ratio = n_unique_energies / energies.size
+    deflection_unique_ratio = n_unique_deflections / deflections.size
 
     if deflection_unique_ratio >= energy_unique_ratio:
         issues.append(
             "Deflection column does not repeat more than the energy column "
-            f"(unique deflections: {n_unique_deflections}/{len(deflections)} "
+            f"(unique deflections: {n_unique_deflections}/{deflections.size} "
             f"= {deflection_unique_ratio:.2f}, unique energies: "
-            f"{n_unique_energies}/{len(energies)} = {energy_unique_ratio:.2f}); "
+            f"{n_unique_energies}/{energies.size} = {energy_unique_ratio:.2f}); "
             "the energy/deflection columns may be swapped."
         )
 

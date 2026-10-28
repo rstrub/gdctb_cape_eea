@@ -9,7 +9,8 @@ name = "gdctb_cape_eea"
 description = "A Python package to process and analyze data from the GDCTB cape_eea instrument."
 readme = "README.rst"
 dynamic = ["version"]
-authors = [{name = "Andrew Robbertz", email="andrew.l.robbertz@nasa.gov"}]
+authors = [{name = "Andrew Robbertz", email="andrew.l.robbertz@nasa.gov"},
+          {name = "Richard Strub", email="richard.f.strub@nasa.gov"}]
 license = {file = "LICENSE.rst"}
 requires-python = ">=3.12"
 keywords = ["nasa mission", "space weather"]

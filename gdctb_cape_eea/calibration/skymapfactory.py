@@ -69,7 +69,7 @@ def SkymapFactory(l0_cdf, stepper, myEEA):
     log.info(f"Number of sweeps found: {len(beginning_packets)}")
 
     # convert CCSDS coarse+fine times to CDF epoch times for all packets
-    epochs = ccsds_to_cdf_time.help_convert_eaa(l0_cdf)
+    epochs = ccsds_to_cdf_time.convert_ccsds_times_to_cdf(l0_cdf)
     n_packets_total = len(epochs)
 
     long_sweeps, short_sweeps = find_irregular_sweeps(
@@ -295,15 +295,9 @@ def manage_stepper_table_energies_and_angles(
         which may differ from a full stepper-table pass if packets were dropped).
     """
 
-    stepvalues = {}
-    stepvalues["energy"] = []
-    stepvalues["elevation_angle"] = []
-
     if len(beginning_packets) == 0:
         log.warning("No sweep-start (STEP==0) packets found; nothing to process.")
-        stepvalues["energy"] = np.array(stepvalues["energy"])
-        stepvalues["elevation_angle"] = np.array(stepvalues["elevation_angle"])
-        return stepvalues
+        return {"energy": np.array([]), "elevation_angle": np.array([])}
 
     finish = npackets
     try:
@@ -316,13 +310,11 @@ def manage_stepper_table_energies_and_angles(
     # within the sweep, so a dropped packet (which shortens the retained sweep
     # but doesn't shift the surviving packets' STEP values) doesn't misalign
     # every subsequent packet's energy/deflection assignment
-    for i in range(beginning_packets[packet], finish):
-        step_in_sweep = steps[i]
-        stepvalues["energy"].append(stepper.energies[step_in_sweep])
-        stepvalues["elevation_angle"].append(stepper.deflections[step_in_sweep])
-    stepvalues["energy"] = np.array(stepvalues["energy"])
-    stepvalues["elevation_angle"] = np.array(stepvalues["elevation_angle"])
-    return stepvalues
+    steps_in_sweep = np.asarray(steps[beginning_packets[packet] : finish])
+    return {
+        "energy": stepper.energies[steps_in_sweep],
+        "elevation_angle": stepper.deflections[steps_in_sweep],
+    }
 
 
 def stuff_stepsize(vals, maxsteps: tuple, fill):
